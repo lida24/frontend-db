@@ -1,4 +1,3 @@
-from quopri import decodestring
 from flask import Flask, jsonify, request, flash
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -168,7 +167,7 @@ def add_chassis():
         db.session.add(result)
         db.session.commit()
 
-        return component_schema.jsonify(server_to_create)
+        return jsonify(server_to_create.id)
 
 @app.route('/app/add_fan140/<int:server_id>/', methods=['GET', 'POST'])
 def add_fan140(server_id):
@@ -180,7 +179,7 @@ def add_fan140(server_id):
         db.session.add(result)
         db.session.commit()
 
-        return component_schema.jsonify(server)
+        return jsonify(server.id)
 
 # sanity check route
 @app.route('/ping', methods=['GET'])

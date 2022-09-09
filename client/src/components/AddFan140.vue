@@ -49,12 +49,13 @@ export default {
   methods: {
     addComponent() {
       axios
-        .post("http://127.0.0.1:5000/app/add_fan140/${this.id}", this.formData)
+        .post(`http://127.0.0.1:5000/app/add_fan140/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          if (this.formData.count < 3) {
-            this.$router.push({ name: "AddFan140" });
-            this.formData.count += 1;
+          if (this.formData.count <= 3) {
+            this.$router.push({ name: "AddFan140", params: { id: response.data } });
+               this.formData.count += 1;
+               console.log(this.formData.count);
           }
         })
         .catch((error) => {

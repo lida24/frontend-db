@@ -181,6 +181,93 @@ def add_fan140(server_id):
 
         return jsonify(server.id)
 
+@app.route('/app/add_fan_control_board/<int:server_id>/', methods=['GET', 'POST'])
+def add_fan_control_board(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.id)
+
+@app.route('/app/add_fan40/<int:server_id>/', methods=['GET', 'POST'])
+def add_fan40(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        for cmps in server.cmps:
+            print("COMPONENTS", cmps)
+
+        return jsonify(server.id)
+
+@app.route('/app/add_indicator_board/<int:server_id>/', methods=['GET', 'POST'])
+def add_indicator_board(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.id)
+
+@app.route('/app/add_power_management_module/<int:server_id>/', methods=['GET', 'POST'])
+def add_power_management_module(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.id)
+
+@app.route('/app/add_motherboard/<int:server_id>/', methods=['GET', 'POST'])
+def add_motherboard(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.id)    
+
+@app.route('/app/add_ddr4_memory_module/<int:server_id>/', methods=['GET', 'POST'])
+def add_ddr4_memory_module(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.id)
+
+@app.route('/app/add_m2_ssd/<int:server_id>/', methods=['GET', 'POST'])
+def add_m2_ssd(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.id)  
+
 # sanity check route
 @app.route('/ping', methods=['GET'])
 def ping_pong():

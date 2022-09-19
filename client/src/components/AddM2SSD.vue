@@ -49,7 +49,7 @@ export default {
         .post(`http://127.0.0.1:5000/app/add_m2_ssd/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          /* this.$router.push({ name: "AddDDR4MemoryModule", params: { id: response.data } }); */
+          this.$router.push({ name: "AddRaiser2UBoard", params: { id: response.data } });
         })
         .catch((error) => {
           console.log(error, error.response);

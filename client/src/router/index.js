@@ -14,6 +14,15 @@ import AddFan40 from "@/components/AddFan40";
 import AddIndicatorBoard from "@/components/AddIndicatorBoard";
 import AddPowerManagementModule from "@/components/AddPowerManagementModule";
 import AddMotherBoard from "@/components/AddMotherBoard";
+import AddDDR4MemoryModule from "@/components/AddDDR4MemoryModule";
+import AddM2SSD from "@/components/AddM2SSD";
+import AddRaiser2UBoard from "@/components/AddRaiser2UBoard";
+import AddNetworkCard from "@/components/AddNetworkCard";
+import AddRaiser1UBoard from "@/components/AddRaiser1UBoard";
+import AddRaidCard from "@/components/AddRaidCard";
+import AddDiskBasket from "@/components/AddDiskBasket";
+import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
+
 
 Vue.use(Router);
 
@@ -108,6 +117,42 @@ export default new Router({
       path: '/add_m2_ssd/:id',
       name: 'AddM2SSD',
       component: AddM2SSD,
+      props: true,
+    },
+    {
+      path: '/add_raiser_2U_board/:id',
+      name: 'AddRaiser2UBoard',
+      component: AddRaiser2UBoard,
+      props: true,
+    },
+    {
+      path: '/add_network_card/:id',
+      name: 'AddNetworkCard',
+      component: AddNetworkCard,
+      props: true,
+    },
+    {
+      path: '/add_raiser_1U_board/:id',
+      name: 'AddRaiser1UBoard',
+      component: AddRaiser1UBoard,
+      props: true,
+    },
+    {
+      path: '/add_raid_card/:id',
+      name: 'AddRaidCard',
+      component: AddRaidCard,
+      props: true,
+    },
+    {
+      path: '/add_disk_basket/:id',
+      name: 'AddDiskBasket',
+      component: AddDiskBasket,
+      props: true,
+    },
+    {
+      path: '/add_power_supply_2k6/:id',
+      name: 'AddPowerSupply2K6',
+      component: AddPowerSupply2K6,
       props: true,
     },
   ],

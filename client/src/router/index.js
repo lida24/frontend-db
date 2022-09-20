@@ -22,6 +22,7 @@ import AddRaiser1UBoard from "@/components/AddRaiser1UBoard";
 import AddRaidCard from "@/components/AddRaidCard";
 import AddDiskBasket from "@/components/AddDiskBasket";
 import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
+import AddServer from "@/components/AddServer";
 
 
 Vue.use(Router);
@@ -154,6 +155,11 @@ export default new Router({
       name: 'AddPowerSupply2K6',
       component: AddPowerSupply2K6,
       props: true,
+    },
+    {
+      path: '/add_server',
+      name: 'AddServer',
+      component: AddServer,
     },
   ],
 });

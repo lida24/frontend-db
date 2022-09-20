@@ -42,7 +42,7 @@ export default {
       formData: {
         hdd_backplane_qrcode: "",
         sas_expander_qrcode: "",
-        count: 1
+        count: 4
       },
     };
   },
@@ -58,7 +58,7 @@ export default {
         .post(`http://127.0.0.1:5000/app/add_disk_basket/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          if (this.formData.count <= 4) {
+          if (this.formData.count >= 1) {
             this.$router.push({ name: "AddDiskBasket", params: { id: response.data } }).catch(error => {
               if (
               error.name !== 'NavigationDuplicated' &&
@@ -69,7 +69,7 @@ export default {
           });
                this.formData.count += 1;
           }
-          if (this.formData.count > 4) {
+          if (this.formData.count < 1) {
             console.log(response.data);
             this.$router.push({ name: "AddPowerSupply2K6", params: { id: response.data } })
           }

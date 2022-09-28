@@ -33,7 +33,9 @@ export default {
   data() {
     return {
       formData: {
-        qrcode: ""
+        qrcode: "",
+        success: false,
+        order: 5,
       },
     };
   },
@@ -49,7 +51,9 @@ export default {
         .post(`http://127.0.0.1:5000/app/add_fan_control_board/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          this.$router.push({ name: "AddPowerManagementModule", params: { id: response.data } })
+          this.formData.success = true;
+          console.log("AddIndicatorBoard: ", this.formData.success);
+          this.$router.push({ name: "AddServer", params: { id: response.data, success: this.formData.success, order: this.formData.order }});
         })
         .catch((error) => {
           console.log(error, error.response);

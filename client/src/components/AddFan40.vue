@@ -68,7 +68,8 @@ export default {
           }
           if (this.formData.count > 6) {
             console.log(response.data);
-            this.$router.push({ name: "AddIndicatorBoard", params: { id: response.data } })
+            /* this.$router.push({ name: "AddIndicatorBoard", params: { id: response.data } }) */
+            this.$router.push({ name: "AddServer", params: { id: response.data } })
           }
         })
         .catch((error) => {

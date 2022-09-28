@@ -160,6 +160,7 @@ export default new Router({
       path: '/add_server',
       name: 'AddServer',
       component: AddServer,
+      props: true,
     },
   ],
 });

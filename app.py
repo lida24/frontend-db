@@ -128,7 +128,7 @@ def component_details(id):
         return "No component with that ID"
 
 #  ------------------ post or add new 
-@app.route('/app/create_component', methods=['POST'])
+@app.route('/app/create_component', methods=['GET', 'POST'])
 def add_component():
     ctype = request.json['ctype']
     qrcode = request.json['qrcode']
@@ -147,8 +147,8 @@ def add_component():
     comptypes.count = comptypes.count + 1
     db.session.add(comptypes)
     db.session.commit()
-
-    flash(f'Деталь успешно добавлена! Продолжайте дальше', category='success')
+    errors = "asdf"
+    return errors
 
     return component_schema.jsonify(components)
 
@@ -168,6 +168,11 @@ def add_chassis():
         db.session.commit()
 
         return jsonify(server_to_create.id)
+
+
+@app.route('/app/get_chassis/<int:server_id>/', methods=['GET', 'POST'])
+def get_chassis(server_id):
+        return jsonify(server_id)
 
 @app.route('/app/add_fan140/<int:server_id>/', methods=['GET', 'POST'])
 def add_fan140(server_id):

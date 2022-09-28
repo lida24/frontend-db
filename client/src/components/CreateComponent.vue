@@ -1,7 +1,13 @@
 <template>
     <div class="container form">
+      <div class="alert alert-info">
+      <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      Please log in to access this page.
+    </div>
     <br />
-    <form method="post" @submit.prevent="addComponent">
+    <form method="post" @submit="addComponent">
      <svg class="mb-4" width="243" height="80" viewBox="0 0 243 80" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <rect width="243" height="80" fill="url(#pattern0)"/>
                 <defs>
@@ -14,6 +20,12 @@
      <h4 class="h3 mb-3 font-weight-normal">
                 Введите QR-код
      </h4>
+      <p v-if="this.formData.errors.length">
+         <b>Please correct the following error(s):</b>
+         <ul>
+           <li v-for="error in errors">{{ error }}</li>
+         </ul>
+      </p>
       <select class="form-control" v-model="formData.ctype">
         <option disabled value="">Выберите тип компонента</option>
         <option v-for="ctype in ctypes">{{ ctype }}</option>
@@ -41,23 +53,38 @@ export default {
     return {
       formData: {
         ctype: "",
-        qrcode: ""
+        qrcode: "",
+        errors: []
       },
-      ctypes: ["server", "chassis", "rail", "motherboard", "raid_card", "network_card", "ddr4_memory_module", "m2_ssd", "sas_expander", "hdd_backplane", "power_module", "raiser_board", "indicator_board", "power_supply_2k6", "fan_140", "fan_40", "power_management_module", "fan_control_board"]
+      ctypes: ["server", "chassis", "rail", "motherboard", "raid_card", "network_card", "ddr4_memory_module", "m2_ssd", "sas_expander", "hdd_backplane", "power_module", "raiser_board", "indicator_board", "power_supply_2k6", "fan_140", "fan_40", "power_management_module", "fan_control_board"],
     };
   },
   methods: {
-    addComponent() {
-      axios
+    addComponent: function (e) {
+      e.preventDefault();
+
+      if (this.formData.qrcode === '') {
+        this.formData.errors.push('Product name is required.');
+      } else {
+        axios
         .post("http://127.0.0.1:5000/app/create_component", this.formData)
         .then((response) => {
           console.log(response);
-          this.$router.push({ name: "Home" });
+          if (response.status === 200) {
+            this.formData.errors = response.data;
+            console.log("Errors", this.formData.errors);
+            alert('OK');
+          } else if (response.status === 400) {
+            let errorResponse = res.json();
+            this.formData.errors.push(errorResponse.error);
+          }
+          /* this.$router.push({ name: "Home" }); */
         })
         .catch((error) => {
           console.log(error, error.response);
         });
-    },
+      }
+    }
   },
 };
 </script>

@@ -33,7 +33,9 @@ export default {
   data() {
     return {
       formData: {
-        qrcode: ""
+        qrcode: "",
+        success: false,
+        order: 6,
       },
     };
   },
@@ -49,7 +51,8 @@ export default {
         .post(`http://127.0.0.1:5000/app/add_power_management_module/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          this.$router.push({ name: "AddMotherBoard", params: { id: response.data } });
+          this.formData.success = true;
+          this.$router.push({ name: "AddServer", params: { id: response.data, success: this.formData.success, order: this.formData.order }});
         })
         .catch((error) => {
           console.log(error, error.response);

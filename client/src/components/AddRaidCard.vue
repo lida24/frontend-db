@@ -49,7 +49,8 @@ export default {
         .post(`http://127.0.0.1:5000/app/add_raid_card/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          this.$router.push({ name: "AddDiskBasket", params: { id: response.data } });
+          /* this.$router.push({ name: "AddDiskBasket", params: { id: response.data } }); */
+          this.$router.push({ name: "AddServer", params: { id: response.data } })
         })
         .catch((error) => {
           console.log(error, error.response);

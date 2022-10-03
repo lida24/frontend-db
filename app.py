@@ -132,6 +132,9 @@ def component_details(id):
 def add_component():
     ctype = request.json['ctype']
     qrcode = request.json['qrcode']
+    errors = "asdf"
+    if qrcode == "":
+        return '500'
     addts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cstat = 'новый'
     statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -147,8 +150,6 @@ def add_component():
     comptypes.count = comptypes.count + 1
     db.session.add(comptypes)
     db.session.commit()
-    errors = "asdf"
-    return errors
 
     return component_schema.jsonify(components)
 

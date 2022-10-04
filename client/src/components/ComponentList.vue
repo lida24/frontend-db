@@ -35,6 +35,7 @@
           .get("http://127.0.0.1:5000/app/component_list")
           .then((response) => {
             this.components = response.data;
+            console.log("Components: ",this.components);
             console.log(response);
           })
           .catch((error) => {

@@ -68,7 +68,7 @@ class Comptypes(db.Model):
         self.components = components
 
 # schema
-class ComptypeSchema(ma.SQLAlchemyAutoSchema):
+class ComptypeSchema(ma.SQLAlchemySchema):
     class  Meta:
         model = Comptypes    
 
@@ -97,9 +97,9 @@ class Servers(db.Model):
         self.sstat = sstat
 
 # schema
-class ServerSchema(ma.SQLAlchemyAutoSchema):
+class ServerSchema(ma.SQLAlchemySchema):
     class  Meta:
-        model = Servers   
+        fields = ("id", "qrcode", "asts", "vts", "sstat") 
 
 # schema obj
 server_schema = ServerSchema() 
@@ -109,6 +109,11 @@ servers_schema = ServerSchema(many=True)
 @app.route('/app/server_list', methods=['GET'])
 def get_servers():
     all_servers = Servers.query.all()
+    print(all_servers)
+    data = []
+    for p in all_servers:
+        data += [{'qrcode': p.qrcode}]
+        print(data)
     return  servers_schema.jsonify(all_servers)
 
 #  ------------------ get all components

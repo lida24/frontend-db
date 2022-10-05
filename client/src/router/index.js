@@ -23,6 +23,7 @@ import AddRaidCard from "@/components/AddRaidCard";
 import AddDiskBasket from "@/components/AddDiskBasket";
 import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
 import AddServer from "@/components/AddServer";
+import Testing from "@/components/Testing";
 
 
 Vue.use(Router);
@@ -160,6 +161,12 @@ export default new Router({
       path: '/add_server',
       name: 'AddServer',
       component: AddServer,
+      props: true,
+    },
+    {
+      path: '/testing/:id',
+      name: 'Testing',
+      component: Testing,
       props: true,
     },
   ],

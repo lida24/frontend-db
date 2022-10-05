@@ -1,6 +1,6 @@
 # client
 
-> Vue.js
+> A Vue.js project
 
 ## Build Setup
 

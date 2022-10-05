@@ -5,6 +5,7 @@
     <table class="table table-hover table-dark">
         <thead>
             <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Заключение</th>
                 <th scope="col">QR-код</th>
                 <th scope="col">Статус</th>
@@ -14,19 +15,20 @@
             </tr>
         </thead>
         <tbody v-for="c in component">
+            <td>{{ c.id }}</td>          
             <td>{{ c.conclusion }}</td>
             <td>{{ c.qrcode }}</td>
             <td>{{ c.cstat }}</td>
             <td><a class="btn btn-outline btn-info disabled" href="#">{{ c.tests }}</a></td>
             <td><a class="btn btn-outline btn-info disabled" href="#">{{ c.rem }}</a></td>
-            <td><a class="btn btn-outline btn-info" href="#">Протестировать</a></td>
+            <td><router-link class="btn btn-outline btn-info" :to="{ name: 'Testing', params: { id: c.id }}">Протестировать</router-link></td>
         </tbody>
     </table>
   </div>
 </template>
 
 <script>
-    import axios from "axios";
+import axios from "axios";
 export default {
   data() {
     return {
@@ -43,7 +45,7 @@ export default {
     //   get component
     componentDetail() {
       axios
-        .get(`http://127.0.0.1:5000/app/component/${this.id}/`)
+        .get(`http://192.168.75.11:5000/app/component/${this.id}/`)
         .then((response) => {
           this.component = response.data;
           console.log(response.data);

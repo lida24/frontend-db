@@ -28,7 +28,7 @@
 </template>
 
 <script>
-    import axios from "axios";
+import axios from "axios";
 export default {
   data() {
     return {
@@ -46,7 +46,7 @@ export default {
   methods: {
     addComponent() {
       axios
-        .post(`http://127.0.0.1:5000/app/add_raiser_2U_board/${this.id}/`, this.formData)
+        .post(`http://192.168.75.11:5000/app/add_raiser_2U_board/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
           this.$router.push({ name: "AddNetworkCard", params: { id: response.data } });

@@ -72,7 +72,7 @@ export default {
         this.formData.errors.push('Product name is required.');
       } else {
         axios
-        .post("http://127.0.0.1:5000/app/create_component", this.formData)
+        .post("http://192.168.75.11:5000/app/create_component", this.formData)
         .then((response) => {
           console.log(response);
           if (response.data == '500') {

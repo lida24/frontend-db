@@ -14,7 +14,7 @@ app.config.from_object(__name__)
 # enable CORS
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lida:12345678@localhost:5432/db_ps'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lida:123@localhost:5432/db_ps'
 app.config['SECRET_KEY'] = '548b2563213f3c0c1bcb915a'
 
 db = SQLAlchemy(app)
@@ -47,7 +47,7 @@ class Components(db.Model):
 # schema
 class ComponentSchema(ma.SQLAlchemySchema):
     class  Meta:
-        model = Components
+        fields = ("id", "ctype", "qrcode", "addts", "cstat", "statts", "tests", "rem", "conclusion", "server_id")
         
 # schema obj
 component_schema = ComponentSchema() 
@@ -70,7 +70,7 @@ class Comptypes(db.Model):
 # schema
 class ComptypeSchema(ma.SQLAlchemySchema):
     class  Meta:
-        model = Comptypes    
+        fields = ("id", "name", "count", "decoding")  
 
 # schema obj
 comptype_schema = ComptypeSchema() 
@@ -126,7 +126,7 @@ def get_components():
 def component_details(id):
 
     component_detail = Comptypes.query.get(id)
-    data = [{'decoding': component_detail.decoding, 'conclusion': p.conclusion, 'qrcode': p.qrcode, 'cstat': p.cstat, 'tests': p.tests, 'rem': p.rem} for p in component_detail.components]
+    data = [{'id': p.id, 'decoding': component_detail.decoding, 'conclusion': p.conclusion, 'qrcode': p.qrcode, 'cstat': p.cstat, 'tests': p.tests, 'rem': p.rem} for p in component_detail.components]
     if component_detail:
         return jsonify(data)
     else:
@@ -361,6 +361,12 @@ def add_power_supply_2k6(server_id):
 
         return jsonify(server.id)
 
+@app.route('/app/testing/<int:id>/', methods=['GET'])
+def testing(id):
+        component = Components.query.filter_by(id=id).first()
+
+        return jsonify(component.id)
+
 
         # sanity check route
 @app.route('/ping', methods=['GET'])
@@ -368,4 +374,4 @@ def ping_pong():
     return jsonify('pong!')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='192.168.75.11', port=5000)

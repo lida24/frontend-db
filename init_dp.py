@@ -3,7 +3,7 @@ import psycopg2
 connection = psycopg2.connect(
               host="localhost",
               user="lida",
-              password="12345678",
+              password="123",
               database="db_ps")
 
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT

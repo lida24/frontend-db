@@ -5,7 +5,7 @@
         <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
-        {{ errors }}
+        {{ log_error }}
       </div>
     </p>
     <div class="container form">
@@ -61,7 +61,8 @@ export default {
         qrcode: "",
       },
       ctypes: ["server", "chassis", "rail", "motherboard", "raid_card", "network_card", "ddr4_memory_module", "m2_ssd", "sas_expander", "hdd_backplane", "power_module", "raiser_board", "indicator_board", "power_supply_2k6", "fan_140", "fan_40", "power_management_module", "fan_control_board"],
-      errors: []
+      errors: [],
+      log_error: []
     };
   },
   methods: {
@@ -77,6 +78,14 @@ export default {
           console.log(response);
           if (response.data == '500') {
             this.errors = response.data;
+            this.log_error = "Введите qr-code компонента!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+            console.log("ERROR: ", this.errors);
+          }
+          else if (response.data == '505') {
+            this.errors = response.data;
+            this.log_error = "Компонент с таким qr-code уже существует!"
             alert = document.getElementsByClassName('alert');
             alert[0].style.display = 'block';
             console.log("ERROR: ", this.errors);

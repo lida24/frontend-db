@@ -24,6 +24,7 @@ import AddDiskBasket from "@/components/AddDiskBasket";
 import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
 import AddServer from "@/components/AddServer";
 import Testing from "@/components/Testing";
+import Login from "@/components/Login";
 
 
 Vue.use(Router);
@@ -168,6 +169,11 @@ export default new Router({
       name: 'Testing',
       component: Testing,
       props: true,
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login,
     },
   ],
 });

@@ -9,12 +9,23 @@
           </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Вход</a>
+                        <!-- <a class="nav-link" href="#">Вход</a> -->
+                        <!-- <router-link class="nav-link" :to="{ name: 'Login' }">Вход</router-link> -->
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Регистрация</a>
+                        <!-- <a class="nav-link" href="#">Регистрация</a> -->
+                        <a class="nav-link" href="#">{{logged_user}}</a>
                     </li>
                 </ul>
         </div>
     </nav>
 </template>
+
+<script>
+export default {
+  name: "NavBar",
+  props: {
+    logged_user: String
+  }
+};
+</script>

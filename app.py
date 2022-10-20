@@ -1,11 +1,20 @@
-from flask import Flask, jsonify, request, flash
+from queue import Queue
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+import queue
+import uuid
+from flask_jwt_extended import create_access_token, JWTManager, create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import UserMixin
+
 
 # configuration
 DEBUG = True
+
+task_queue = queue.Queue()
 
 # instantiate the app
 app = Flask(__name__)
@@ -16,9 +25,31 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lida:123@localhost:5432/db_ps'
 app.config['SECRET_KEY'] = '548b2563213f3c0c1bcb915a'
+jwt = JWTManager(app)
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    username = db.Column(db.String(), nullable=False, unique=True)
+    password = db.Column(db.String(), nullable=False)
+
+
+    def __init__(self, username):
+        self.username = username
+
+
+    def set_password(self, secret):
+        self.password = generate_password_hash(secret)
+
+    def check_password(self, secret):
+        return check_password_hash(self.password, secret)
+    
+""" u = User(username = 'alex')
+u.set_password('123456')
+db.session.add(u)
+db.session.commit() """
 
 # table
 class Components(db.Model):
@@ -137,9 +168,14 @@ def component_details(id):
 def add_component():
     ctype = request.json['ctype']
     qrcode = request.json['qrcode']
-    errors = "asdf"
+    errors = ""
     if qrcode == "":
-        return '500'
+        errors = '500'
+        return errors
+    result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+    if result != None:
+        errors = '505'
+        return errors
     addts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cstat = 'новый'
     statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -363,10 +399,126 @@ def add_power_supply_2k6(server_id):
 
 @app.route('/app/testing/<int:id>/', methods=['GET'])
 def testing(id):
+        global task_queue
+        task = ''
         component = Components.query.filter_by(id=id).first()
-
+        uu = uuid.uuid4()
+        if component.ctype == 'power_supply_2k6':
+                task = 'PWR_Supply'
+        elif component.ctype == 'fan_140' or component.ctype == 'fan_40':
+                task = 'Fan_Module'
+        elif component.ctype == 'raiser_board':
+                task = 'Riser_card'
+        elif component.ctype == 'hdd_backplane':
+                task = 'Backplane'
+        elif component.ctype == 'motherboard':
+                task = 'Mainboard'
+        task_queue.put( jsonify( { 'return_code' : 0, 'task': task, 'snum': component.qrcode, 'task_uuid': uu, 'id': component.id } ) )
         return jsonify(component.id)
 
+@app.route('/app/gettask/', methods=['GET'])
+def gettask():
+        global task_queue
+        if not task_queue.empty():
+                task_json = task_queue.get()
+                task_queue.task_done()
+                return task_json
+
+        return jsonify( { 'return_code' : 0 } )
+
+@app.route('/app/getresults/', methods=['POST'])
+def getresults():
+        id = request.json['id']
+        cstat = request.json['cstat']
+        print(request)
+
+        component = Components.query.filter_by(id=id).first()
+        if cstat == 'Ok':
+                component.cstat = 'протестирован'
+                db.session.add(component)
+                db.session.commit()
+        print("POST: ", id, cstat)
+
+        return cstat
+
+""" @app.route('/app/login', methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+    user = User.query.filter_by(username=username).first()
+
+    print("User: ", user)
+    print("USER PASSWORD:", user.password)
+    print("PASSWORD", password)
+    print("CHECK PASSWORD: ", user.check_password(password))
+
+    if not user or not user.check_password(password):
+        return jsonify({
+            "status": "failed",
+            "message": "Failed getting user"
+        }), 401
+
+    # Generate a token
+    access_token = create_access_token(identity=username)
+
+    return jsonify({
+        "status": "success",
+        "message": "login successful",
+        "data": {
+            "id": user.id,
+            "token": access_token,
+            "username": user.username
+        }
+    }), 200 """
+
+"""     @app.route('/app/logout')
+    def logout_page():
+        logout_user()
+        flash("Вы не вошли в систему!", category='info')
+        return redirect(url_for("home_page")) """
+
+@app.route('/register', methods=('POST',))
+def register():
+  data = request.get_json()
+  password = data['password']
+  username = data['username']
+
+  user = User.query.filter_by(username=username).first()
+  if user is None:
+    user = User(
+      username=username,
+      password=generate_password_hash(password)
+    )
+
+    user.add()
+    access_token = create_access_token(identity=user.user_id)
+    refresh_token = create_refresh_token(identity=user.user_id)
+
+    response = jsonify()
+    set_access_cookies(response, access_token)
+    set_refresh_cookies(response, refresh_token)
+
+    return response, 201
+  else:
+    return jsonify(message="Unable to create user."), 400
+    
+@app.route('/login', methods=('POST',))
+def login():
+  data = request.get_json()
+  username = data['username']
+  password = data['password']
+  user = User.authenticate(username, password)
+  if user:
+    access_token = create_access_token(identity=user.id)
+    refresh_token = create_refresh_token(identity=user.id)
+
+    response = jsonify()
+    set_access_cookies(response, access_token)
+    set_refresh_cookies(response, refresh_token)
+    return response, 201
+  else:
+    return jsonify(message="Unauthorized"), 401
 
         # sanity check route
 @app.route('/ping', methods=['GET'])

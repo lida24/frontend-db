@@ -58,16 +58,23 @@ export default {
       log_error: []
     };
   },
+  props: {
+    username: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   methods: {
     addComponent: function (e) {
       e.preventDefault();
-
+      console.log(this.username);
       if (0) {
         this.form.errors.push('Product name is required.');
       } else {
         axios
-        .post("http://127.0.0.1:5001/app/create_component", this.form)
+        .post(`http://127.0.0.1:5001/app/create_component/${this.username}/`, this.form)
         .then((response) => {
+          console.log(this.username);
           console.log(response);
           if (response.data == '500') {
             this.errors = response.data;

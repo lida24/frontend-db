@@ -51,9 +51,10 @@ const routes = [
     meta: { guest: true },
   },
   {
-    path: "/create_component",
+    path: "/create_component/:username",
     name: "CreateComponent",
     component: CreateComponent,
+    props: true,
     meta: { requiresAuth: true },
   },
   {

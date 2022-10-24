@@ -9,7 +9,7 @@ import uuid
 from flask_jwt_extended import JWTManager
 from flask_login import UserMixin
 from flask_bcrypt import Bcrypt
-from flask_login import login_user, UserMixin, current_user, LoginManager, logout_user
+from flask_login import login_user, UserMixin, LoginManager, logout_user
 
 
 # configuration
@@ -35,7 +35,6 @@ ma = Marshmallow(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
-current_user_id = None
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -183,8 +182,9 @@ def component_details(id):
         return "No component with that ID"
 
 #  ------------------ post or add new 
-@app.route('/app/create_component', methods=['GET', 'POST'])
-def add_component():
+@app.route('/app/create_component/<username>/', methods=['GET', 'POST'])
+def add_component(username):
+    print("USERNAME: ", username)
     ctype = request.json['ctype']
     qrcode = request.json['qrcode']
     errors = ""
@@ -195,12 +195,13 @@ def add_component():
     if result != None:
         errors = '505'
         return errors
+    user = User.query.filter_by(username=username).first()
     addts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cstat = 'новый'
     statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     tests = 'Отсутствует'
     rem = 'Отсутствует'
-    owner = current_user_id
+    owner = user.id
     conclusion = '-'
 
     components = Components(ctype, qrcode, addts, cstat, statts, tests, rem, owner, conclusion)
@@ -472,9 +473,6 @@ def register():
         db.session.add(user_to_create)
         db.session.commit()
         login_user(user_to_create)
-        current_user_id = current_user.id
-        print("Current user: ", current_user.id)
-        print("Current user: ", current_user_id)
         return jsonify({
         "status": "success",
         "message": "register successful",
@@ -503,10 +501,7 @@ def login():
 
 
     login_user(user)
-    global current_user_id
-    current_user_id = current_user.id
-    print("Current user: ", current_user.id)
-    print("Current user: ", current_user_id)
+
     return jsonify({
         "status": "success",
         "message": "login successful",
@@ -520,8 +515,6 @@ def login():
 @app.route('/logout')
 def logout_page():
     logout_user()
-    global current_user_id
-    current_user_id = None
     return jsonify({
         "status": "success"
     }), 200

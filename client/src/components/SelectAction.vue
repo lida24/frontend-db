@@ -4,7 +4,8 @@
         <h1 class="display-4 font-weight-normal">Выберите необходимое действие</h1>
         <div class="wrapper">
             <div class="components-btn">
-                <router-link class="btn btn-primary component-btn" :to="{ name: 'CreateComponent' }">Добавить компонент</router-link>
+                <router-link class="btn btn-primary component-btn" :to="{ name: 'CreateComponent', params: { username: User }}">Добавить компонент</router-link>
+                <!-- <router-link class="btn btn-primary component-btn" :to="/create_component/${this.username}/">Добавить компонент</router-link>  -->
                 <router-link class="btn btn-primary component-btn" :to="{ name: 'ComponentList' }">Просмотреть все компоненты</router-link>
             </div>
             <div class="servers-btn">
@@ -18,6 +19,19 @@
     <div class="product-device product-device-2 box-shadow d-none d-md-block"></div>
 </div>
 </template>
+
+<script>
+import { mapGetters } from "vuex";
+export default {
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isAuthenticated;
+    },
+    ...mapGetters({ User: "StateUser" }),
+
+  },
+};
+</script>
 
 <style>
 .wrapper {

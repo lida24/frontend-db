@@ -1,51 +1,64 @@
-import { authService } from '@/api'
-
-const namespaced = true;
+import axios from "axios";
 
 const state = {
-  user: {},
-  isLoggedIn: false
+  user: null,
 };
 
 const getters = {
-  isLoggedIn: state => state.isLoggedIn,
-  user: state => state.user
+  isAuthenticated: (state) => !!state.user,
+  StateUser: (state) => state.user,
 };
 
 const actions = {
-  async registerUser({ dispatch }, user) {
-    await authService.post("http://192.168.75.11:5000//register", user)
-    await dispatch('fetchUser')
+  async Register({dispatch}, form) {
+    await axios.post('http://127.0.0.1:5001/register', form)
+    let UserForm = new FormData()
+    UserForm.append('username', form.username)
+    UserForm.append('password', form.password)
+    /* await dispatch('LogIn', UserForm) */
   },
-  async loginUser({ dispatch }, user) {
-    await authService.post("http://192.168.75.11:5000/login", user)
-    await dispatch('fetchUser')
+
+  async LogIn({commit}, form) {
+    await axios.post("http://127.0.0.1:5001/login",
+      {
+        "username": form.username,
+        "password": form.password
+      }
+    )
+    .then((res) => {
+      console.log(res);
+      console.log("u", form.username);
+      console.log("p", form.password);
+      this.msg = res.data;
+      commit("setUser", form.username);
+    })
+    .catch((error) => {
+      console.log("ERROR: ", error);
+      console.error(error);
+    });
   },
-  async fetchUser({ commit }) {
-    await authService.get("http://192.168.75.11:5000/user")
-      .then(({ data }) => commit('setUser', data))
+
+
+  async LogOut({ commit }) {
+    await axios.get('http://127.0.0.1:5001/logout')
+    let user = null;
+    commit("logout", user);
   },
-  async logoutUser({ commit }) {
-    await authService.post('/logout');
-    commit('logoutUserState');
-  }
 };
 
 const mutations = {
-  setUser(state, user) {
-    state.isLoggedIn = true;
+  setUser(state, username) {
+    state.user = username;
+  },
+
+  logout(state, user) {
     state.user = user;
   },
-  logoutUserState(state) {
-    state.isLoggedIn = false;
-    state.user = {};
-  }
 };
 
 export default {
-  namespaced,
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

@@ -9,13 +9,6 @@
       </div>
     </p>
     <div class="container form">
-    <!-- <div class="alert alert-info">
-      <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">×</span>
-      </button>
-      Please log in to access this page.
-    </div> -->
-    <!-- v-for="error in errors" -->
     <br />
     <form method="post" @submit="addComponent">
      <svg class="mb-4" width="243" height="80" viewBox="0 0 243 80" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -30,7 +23,7 @@
      <h4 class="h3 mb-3 font-weight-normal">
                 Введите QR-код
      </h4>
-      <select class="form-control" v-model="formData.ctype">
+      <select class="form-control" v-model="form.ctype">
         <option disabled value="">Выберите тип компонента</option>
         <option v-for="ctype in ctypes">{{ ctype }}</option>
       </select>
@@ -39,7 +32,7 @@
       <input
         type="text"
         placeholder="QR-код"
-        v-model="formData.qrcode"
+        v-model="form.qrcode"
         class="form-control"
       />
       <br />
@@ -56,7 +49,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      formData: {
+      form: {
         ctype: "",
         qrcode: "",
       },
@@ -70,10 +63,10 @@ export default {
       e.preventDefault();
 
       if (0) {
-        this.formData.errors.push('Product name is required.');
+        this.form.errors.push('Product name is required.');
       } else {
         axios
-        .post("http://192.168.75.11:5000/app/create_component", this.formData)
+        .post("http://127.0.0.1:5001/app/create_component", this.form)
         .then((response) => {
           console.log(response);
           if (response.data == '500') {

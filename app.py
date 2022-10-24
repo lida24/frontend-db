@@ -6,9 +6,10 @@ from flask_marshmallow import Marshmallow
 from datetime import datetime
 import queue
 import uuid
-from flask_jwt_extended import create_access_token, JWTManager, create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask_jwt_extended import JWTManager
 from flask_login import UserMixin
+from flask_bcrypt import Bcrypt
+from flask_login import login_user, UserMixin, current_user, LoginManager, logout_user
 
 
 # configuration
@@ -28,28 +29,45 @@ app.config['SECRET_KEY'] = '548b2563213f3c0c1bcb915a'
 jwt = JWTManager(app)
 
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 ma = Marshmallow(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+
+current_user_id = None
+
+@login_manager.user_loader
+def load_user(user_id):
+    print("user_loader", User.query.get(int(user_id)))
+    return User.query.get(int(user_id))
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
-    username = db.Column(db.String(), nullable=False, unique=True)
-    password = db.Column(db.String(), nullable=False)
+    username = db.Column(db.String(length=30), nullable=False, unique=True)
+    password_hash = db.Column(db.String(length=60), nullable=False)
+    components = db.relationship('Components', backref='user_components', lazy=True)
+
+    @property
+    def password(self):
+        return self.password
+
+    @password.setter
+    def password(self, user_text_password):
+        self.password_hash = bcrypt.generate_password_hash(user_text_password).decode('utf-8')
+
+    def check_password_correction(self, attempted_password):
+        return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
 
-    def __init__(self, username):
-        self.username = username
-
-
-    def set_password(self, secret):
-        self.password = generate_password_hash(secret)
-
-    def check_password(self, secret):
-        return check_password_hash(self.password, secret)
-    
-""" u = User(username = 'alex')
-u.set_password('123456')
-db.session.add(u)
-db.session.commit() """
+# schema
+class UserSchema(ma.SQLAlchemySchema):
+    class  Meta:
+        fields = ("id", "username", "password")
+        
+# schema obj
+user_schema = UserSchema() 
+userss_schema = UserSchema(many=True)
 
 # table
 class Components(db.Model):
@@ -61,11 +79,11 @@ class Components(db.Model):
     statts = db.Column(db.DateTime(), nullable=False)
     tests = db.Column(db.String(length=150), default='Отсутствует')
     rem = db.Column(db.String(length=1024), default='Отсутствует')
-    #owner = db.Column(db.Integer(), db.ForeignKey('plant.id'))
+    owner = db.Column(db.Integer(), db.ForeignKey('user.id'))
     conclusion = db.Column(db.String(length=1024), nullable=False, default='-')
     server_id = db.Column(db.Integer(), db.ForeignKey('servers.id'))
 
-    def __init__(self, ctype, qrcode, addts, cstat, statts, tests, rem, conclusion):
+    def __init__(self, ctype, qrcode, addts, cstat, statts, tests, rem, owner, conclusion):
         self.ctype = ctype
         self.qrcode = qrcode
         self.addts = addts
@@ -73,12 +91,13 @@ class Components(db.Model):
         self.statts = statts
         self.tests = tests
         self.rem = rem
+        self.owner = owner
         self.conclusion = conclusion
 
 # schema
 class ComponentSchema(ma.SQLAlchemySchema):
     class  Meta:
-        fields = ("id", "ctype", "qrcode", "addts", "cstat", "statts", "tests", "rem", "conclusion", "server_id")
+        fields = ("id", "ctype", "qrcode", "addts", "cstat", "statts", "tests", "rem", "owner", "conclusion", "server_id")
         
 # schema obj
 component_schema = ComponentSchema() 
@@ -181,9 +200,10 @@ def add_component():
     statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     tests = 'Отсутствует'
     rem = 'Отсутствует'
+    owner = current_user_id
     conclusion = '-'
 
-    components = Components(ctype, qrcode, addts, cstat, statts, tests, rem, conclusion)
+    components = Components(ctype, qrcode, addts, cstat, statts, tests, rem, owner, conclusion)
     db.session.add(components)
     db.session.commit()
 
@@ -441,84 +461,70 @@ def getresults():
 
         return cstat
 
-""" @app.route('/app/login', methods=["POST"])
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+        username = request.json['username']
+        password = request.json['password']
+        print("User: ", username)
+        print("PASSWORD:", password)
+        user_to_create = User(username=username, password=password)
+        print("User to create")
+        db.session.add(user_to_create)
+        db.session.commit()
+        login_user(user_to_create)
+        current_user_id = current_user.id
+        print("Current user: ", current_user.id)
+        print("Current user: ", current_user_id)
+        return jsonify({
+        "status": "success",
+        "message": "register successful",
+        "data": {
+            "id": user_to_create.id,
+            "username": username
+        }
+    }), 200
+
+
+@app.route('/login', methods=["POST"])
 def login():
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username = request.json['username']
+    password = request.json['password']
     user = User.query.filter_by(username=username).first()
 
     print("User: ", user)
-    print("USER PASSWORD:", user.password)
     print("PASSWORD", password)
-    print("CHECK PASSWORD: ", user.check_password(password))
+    print("CHECK PASSWORD: ", user.check_password_correction(attempted_password=password))
 
-    if not user or not user.check_password(password):
+    if not user or not user.check_password_correction(attempted_password=password):
         return jsonify({
             "status": "failed",
             "message": "Failed getting user"
         }), 401
 
-    # Generate a token
-    access_token = create_access_token(identity=username)
 
+    login_user(user)
+    global current_user_id
+    current_user_id = current_user.id
+    print("Current user: ", current_user.id)
+    print("Current user: ", current_user_id)
     return jsonify({
         "status": "success",
         "message": "login successful",
         "data": {
             "id": user.id,
-            "token": access_token,
-            "username": user.username
+            "username": username
         }
-    }), 200 """
+    }), 200
 
-"""     @app.route('/app/logout')
-    def logout_page():
-        logout_user()
-        flash("Вы не вошли в систему!", category='info')
-        return redirect(url_for("home_page")) """
 
-@app.route('/register', methods=('POST',))
-def register():
-  data = request.get_json()
-  password = data['password']
-  username = data['username']
-
-  user = User.query.filter_by(username=username).first()
-  if user is None:
-    user = User(
-      username=username,
-      password=generate_password_hash(password)
-    )
-
-    user.add()
-    access_token = create_access_token(identity=user.user_id)
-    refresh_token = create_refresh_token(identity=user.user_id)
-
-    response = jsonify()
-    set_access_cookies(response, access_token)
-    set_refresh_cookies(response, refresh_token)
-
-    return response, 201
-  else:
-    return jsonify(message="Unable to create user."), 400
-    
-@app.route('/login', methods=('POST',))
-def login():
-  data = request.get_json()
-  username = data['username']
-  password = data['password']
-  user = User.authenticate(username, password)
-  if user:
-    access_token = create_access_token(identity=user.id)
-    refresh_token = create_refresh_token(identity=user.id)
-
-    response = jsonify()
-    set_access_cookies(response, access_token)
-    set_refresh_cookies(response, refresh_token)
-    return response, 201
-  else:
-    return jsonify(message="Unauthorized"), 401
+@app.route('/logout')
+def logout_page():
+    logout_user()
+    global current_user_id
+    current_user_id = None
+    return jsonify({
+        "status": "success"
+    }), 200
 
         # sanity check route
 @app.route('/ping', methods=['GET'])
@@ -526,4 +532,4 @@ def ping_pong():
     return jsonify('pong!')
 
 if __name__ == '__main__':
-    app.run(host='192.168.75.11', port=5000)
+    app.run(host='127.0.0.1', port=5001)

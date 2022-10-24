@@ -20,7 +20,7 @@
       },
         created() {
           axios
-            .get(`http://192.168.75.11:5000/app/testing/${this.id}/`)
+            .get(`http://127.0.0.1:5001/app/testing/${this.id}/`)
             .then((response) => {
               this.servers = response.data;
               console.log(response);

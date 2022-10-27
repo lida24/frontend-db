@@ -1,6 +1,7 @@
 <template>
     <div class="container">
-      Testing
+      <!-- Testing {{ this.status }} -->
+      <router-link class="btn btn-primary server-btn" :to="{ name: 'TestingProcess', params: { id: this.id }}">Testing</router-link>
     </div>
 </template>
 
@@ -9,7 +10,7 @@
     export default {
       data() {
         return {
-          servers: [],
+          servers: []
         };
       },
       props: {
@@ -20,9 +21,10 @@
       },
         created() {
           axios
-            .get(`http://127.0.0.1:5001/app/testing/${this.id}/`)
+            .get(`http://192.168.75.11:5000/app/testing/${this.id}/`)
             .then((response) => {
               this.servers = response.data;
+              console.log("Servers: ", this.servers);
               console.log(response);
             })
             .catch((error) => {

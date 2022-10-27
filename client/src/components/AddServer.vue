@@ -210,7 +210,7 @@
     
       created() {
         axios
-          .get(`http://127.0.0.1:5001/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             this.n = response.data;
             console.log(response);

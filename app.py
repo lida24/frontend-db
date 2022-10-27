@@ -1,5 +1,5 @@
 from queue import Queue
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, flash
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -74,7 +74,7 @@ class Components(db.Model):
     ctype = db.Column(db.String(length=150), db.ForeignKey('comptypes.name'))
     qrcode = db.Column(db.String(length=180), nullable=False, unique=True)
     addts = db.Column(db.DateTime(), nullable=False)
-    cstat = db.Column(db.String(length=30), nullable=False, default='новый')
+    cstat = db.Column(db.String(length=30), default='новый')
     statts = db.Column(db.DateTime(), nullable=False)
     tests = db.Column(db.String(length=150), default='Отсутствует')
     rem = db.Column(db.String(length=1024), default='Отсутствует')
@@ -434,6 +434,8 @@ def testing(id):
                 task = 'Backplane'
         elif component.ctype == 'motherboard':
                 task = 'Mainboard'
+        elif component.ctype == 'power_management_module':
+                task = 'PWR_Module'
         task_queue.put( jsonify( { 'return_code' : 0, 'task': task, 'snum': component.qrcode, 'task_uuid': uu, 'id': component.id } ) )
         return jsonify(component.id)
 
@@ -447,20 +449,34 @@ def gettask():
 
         return jsonify( { 'return_code' : 0 } )
 
-@app.route('/app/getresults/', methods=['POST'])
+@app.route('/app/getresults/', methods=['GET', 'POST'])
 def getresults():
+
         id = request.json['id']
         cstat = request.json['cstat']
         print(request)
 
         component = Components.query.filter_by(id=id).first()
+        component.cstat = cstat
+        db.session.add(component)
+        db.session.commit()
         if cstat == 'Ok':
-                component.cstat = 'протестирован'
-                db.session.add(component)
-                db.session.commit()
+            component.cstat = 'протестирован'
+            db.session.add(component)
+            db.session.commit()
         print("POST: ", id, cstat)
 
-        return cstat
+        getstatus(id)
+
+        return jsonify( { 'status' : cstat } )
+
+@app.route('/app/getstatus/<int:id>/', methods=['GET', 'POST'])
+def getstatus(id):
+        component = Components.query.filter_by(id=id).first()
+        print("/app/getstatus ", component.cstat)
+        cstat = component.cstat
+
+        return jsonify(cstat)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -502,6 +518,7 @@ def login():
 
     login_user(user)
 
+
     return jsonify({
         "status": "success",
         "message": "login successful",
@@ -525,4 +542,4 @@ def ping_pong():
     return jsonify('pong!')
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001)
+    app.run(host='192.168.75.11', port=5000)

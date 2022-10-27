@@ -49,7 +49,7 @@ export default {
   methods: {
     addComponent() {
       axios
-        .post(`http://127.0.0.1:5001/app/add_fan140/${this.id}/`, this.formData)
+        .post(`http://192.168.75.11:5000/app/add_fan140/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
           if (this.formData.count <= 3) {

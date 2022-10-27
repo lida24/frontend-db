@@ -45,7 +45,7 @@ export default {
     //   get component
     componentDetail() {
       axios
-        .get(`http://127.0.0.1:5001/app/component/${this.id}/`)
+        .get(`http://192.168.75.11:5000/app/component/${this.id}/`)
         .then((response) => {
           this.component = response.data;
           console.log(response.data);

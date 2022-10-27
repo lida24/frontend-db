@@ -27,6 +27,7 @@ import Testing from "@/components/Testing";
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import { store } from "../store";
+import TestingProcess from "@/components/TestingProcess";
 
 
 Vue.use(Router);
@@ -202,6 +203,13 @@ const routes = [
     path: '/testing/:id',
     name: 'Testing',
     component: Testing,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/getstatus/:id',
+    name: 'TestingProcess',
+    component: TestingProcess,
     props: true,
     meta: { requiresAuth: true },
   },

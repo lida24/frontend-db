@@ -28,6 +28,7 @@ import Login from "@/components/Login";
 import Register from "@/components/Register";
 import { store } from "../store";
 import TestingProcess from "@/components/TestingProcess";
+import CurrentComponent from "@/components/CurrentComponent";
 
 
 Vue.use(Router);
@@ -79,6 +80,13 @@ const routes = [
     path: '/component_detail/:id',
     name: 'ComponentDetail',
     component: ComponentDetail,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/current_component/:id',
+    name: 'CurrentComponent',
+    component: CurrentComponent,
     props: true,
     meta: { requiresAuth: true },
   },

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <router-link class="go-back" :to="{ name: 'ComponentList' }">Вернуться к компонентам</router-link>
     <h3>{{ component[0].decoding }}</h3>
@@ -22,6 +22,28 @@
             <td><a class="btn btn-outline btn-info disabled" href="#">{{ c.tests }}</a></td>
             <td><a class="btn btn-outline btn-info disabled" href="#">{{ c.rem }}</a></td>
             <td><router-link class="btn btn-outline btn-info" :to="{ name: 'Testing', params: { id: c.id }}">Протестировать</router-link></td>
+        </tbody>
+    </table>
+  </div>
+</template> -->
+
+<template>
+  <div>
+    <router-link class="go-back" :to="{ name: 'ComponentList' }">Вернуться к компонентам</router-link>
+    <h3>{{ component[0].decoding }}</h3>
+    <table class="table table-hover table-dark">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">QR-код</th>
+                <th scope="col">Опции</th>
+            </tr>
+        </thead>
+        <tbody v-for="c in component">
+            <td>{{ c.id }}</td>          
+            <td>{{ c.qrcode }}</td>
+            <td><router-link class="btn btn-outline btn-info" :to="{ name: 'CurrentComponent', params: { id: c.id }}">Подробнее</router-link></td>
+            <!-- <td><router-link class="btn btn-outline btn-info" :to="{ name: 'Testing', params: { id: c.id }}">Протестировать</router-link></td> -->
         </tbody>
     </table>
   </div>

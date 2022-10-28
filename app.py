@@ -181,6 +181,16 @@ def component_details(id):
     else:
         return "No component with that ID"
 
+@app.route('/app/current_component/<id>/', methods=['GET'])
+def current_component(id):
+
+    current_component = Components.query.filter_by(id=id).first()
+    data = {'id': current_component.id, 'conclusion': current_component.conclusion, 'qrcode': current_component.qrcode, 'cstat': current_component.cstat, 'tests': current_component.tests, 'rem': current_component.rem}
+    if current_component:
+        return jsonify(data)
+    else:
+        return "No component with that ID"
+
 #  ------------------ post or add new 
 @app.route('/app/create_component/<username>/', methods=['GET', 'POST'])
 def add_component(username):

@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from "vue-router";
 import CreateComponent from "@/components/CreateComponent";
-import Ping from "@/components/Ping";
 import Home from "@/components/Home";
 import SelectAction from "@/components/SelectAction";
 import ComponentList from "@/components/ComponentList";
@@ -23,23 +22,16 @@ import AddRaidCard from "@/components/AddRaidCard";
 import AddDiskBasket from "@/components/AddDiskBasket";
 import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
 import AddServer from "@/components/AddServer";
-import Testing from "@/components/Testing";
 import Login from "@/components/Login";
 import Register from "@/components/Register";
-import { store } from "../store";
-import TestingProcess from "@/components/TestingProcess";
 import CurrentComponent from "@/components/CurrentComponent";
+import { store } from "../store";
 
 
 Vue.use(Router);
 
 
 const routes = [
-  {
-    path: "/ping",
-    name: "Ping",
-    component: Ping,
-  },
   {
     path: "/register",
     name: "Register",
@@ -204,20 +196,6 @@ const routes = [
     path: '/add_server',
     name: 'AddServer',
     component: AddServer,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/testing/:id',
-    name: 'Testing',
-    component: Testing,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/getstatus/:id',
-    name: 'TestingProcess',
-    component: TestingProcess,
     props: true,
     meta: { requiresAuth: true },
   },

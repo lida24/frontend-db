@@ -36,9 +36,7 @@
         class="form-control"
       />
       <br />
-      <button type="submit" class="btn btn-primary"
-        >Добавить</button
-      >
+      <button type="submit" class="btn btn-primary">Добавить</button>
     </form>
     </div>
   </div>
@@ -74,10 +72,6 @@ export default {
         axios
         .post(`http://192.168.75.11:5000/app/create_component/${this.username}/`, this.form)
         .then((response) => {
-          this.logs = response.data;
-          this.log = "Компонент успешно добавлен!"
-          alert = document.getElementsByClassName('alert');
-          alert[0].style.display = 'block';
           if (response.data == '500') {
             this.logs = response.data;
             this.log = "Введите qr-code компонента!"
@@ -89,6 +83,13 @@ export default {
             this.log = "Компонент с таким qr-code уже существует!"
             alert = document.getElementsByClassName('alert');
             alert[0].style.display = 'block';
+          }
+          else {
+            this.logs = response.data;
+            this.log = "Компонент успешно добавлен!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+            this.$router.push({ name: "CurrentComponent", params: { id: response.data.id } })
           }
         })
         .catch((error) => {

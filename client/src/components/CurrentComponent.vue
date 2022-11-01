@@ -1,6 +1,6 @@
 <template>
     <div>
-      <router-link class="go-back" :to="{ name: 'ComponentList' }">Вернуться к компонентам</router-link>
+      <!-- <router-link class="go-back" :to="{ name: 'ComponentDetail' }">Вернуться к компонентам</router-link> -->
       <!-- <h3>{{ component[0].decoding }}</h3> -->
       <table class="table table-hover table-dark">
           <thead>
@@ -18,10 +18,11 @@
               <td>{{ this.component.id }}</td>          
               <td>{{ this.component.conclusion }}</td>
               <td>{{ this.component.qrcode }}</td>
-              <td>{{ this.component.cstat }}</td>
+              <td>{{ this.component.cstat }}<div class="stage" style="display: none;"><div class="dot-spin"></div></div></td>
               <td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td>
               <td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.rem }}</a></td>
-              <td><router-link class="btn btn-outline btn-info" :to="{ name: 'Testing', params: { id: this.component.id }}">Протестировать</router-link></td>
+              <!-- <td><button id="disabled" class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td> -->
+              <td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td>
           </tbody>
       </table>
     </div>
@@ -33,6 +34,7 @@ export default {
   data() {
     return {
       component: [],
+      status: '',
     };
   },
   props: {
@@ -54,9 +56,100 @@ export default {
           console.log(error);
         });
     },
+    testing() {
+      axios
+        .get(`http://192.168.75.11:5000/app/testing/${this.component.id}/`)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error, error.response);
+        });
+        setInterval(() => { axios
+            .get(`http://192.168.75.11:5000/app/getstatus/${this.component.id}/`)
+            .then((response) => {
+              if (response.data == null) {
+                this.component.cstat = 'тестируется';
+                let elem = document.querySelector(".stage");
+                if (elem != null) {
+                  elem.style.display = "flex";
+                }
+              } else if (response.data != null) {
+                    this.component.cstat = response.data;
+                    let element = document.querySelector(".stage");
+                    element.style.display = "none";
+                    console.log("Status: ", this.component.cstat);
+                    /* document.getElementById("disabled").disabled = true; */
+                    console.log(response);
+              }
+            })
+            .catch((error) => {
+              console.log(error, error.response);
+            });
+          }, 2000);
+    }
   },
+  computed: {
+    computedCondition() {
+      if (this.component.cstat == 'протестирован') {
+        return true;
+      }
+      else {
+        return false;
+      } 
+    }
+   },
   created() {
       this.componentDetail();
   },
 };
 </script>
+
+<style>
+.stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 2rem 0;
+    margin: 0 -5%;
+    overflow: hidden;
+}
+.dot-spin {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: transparent;
+    color: transparent;
+    box-shadow: 0 -18px 0 0 #9880ff, 12.72984px -12.72984px 0 0 #9880ff, 18px 0 0 0 #9880ff, 12.72984px 12.72984px 0 0 rgb(152 128 255 / 0%), 0 18px 0 0 rgb(152 128 255 / 0%), -12.72984px 12.72984px 0 0 rgb(152 128 255 / 0%), -18px 0 0 0 rgb(152 128 255 / 0%), -12.72984px -12.72984px 0 0 rgb(152 128 255 / 0%);
+    animation: dotSpin 1.5s infinite linear;
+}
+@keyframes dotSpin {
+  0%,
+  100% {
+    box-shadow: 0 -18px 0 0 #9880ff, 12.72984px -12.72984px 0 0 #9880ff, 18px 0 0 0 #9880ff, 12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), 0 18px 0 -5px rgba(152, 128, 255, 0), -12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), -18px 0 0 -5px rgba(152, 128, 255, 0), -12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0);
+  }
+  12.5% {
+    box-shadow: 0 -18px 0 -5px rgba(152, 128, 255, 0), 12.72984px -12.72984px 0 0 #9880ff, 18px 0 0 0 #9880ff, 12.72984px 12.72984px 0 0 #9880ff, 0 18px 0 -5px rgba(152, 128, 255, 0), -12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), -18px 0 0 -5px rgba(152, 128, 255, 0), -12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0);
+  }
+  25% {
+    box-shadow: 0 -18px 0 -5px rgba(152, 128, 255, 0), 12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0), 18px 0 0 0 #9880ff, 12.72984px 12.72984px 0 0 #9880ff, 0 18px 0 0 #9880ff, -12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), -18px 0 0 -5px rgba(152, 128, 255, 0), -12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0);
+  }
+  37.5% {
+    box-shadow: 0 -18px 0 -5px rgba(152, 128, 255, 0), 12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0), 18px 0 0 -5px rgba(152, 128, 255, 0), 12.72984px 12.72984px 0 0 #9880ff, 0 18px 0 0 #9880ff, -12.72984px 12.72984px 0 0 #9880ff, -18px 0 0 -5px rgba(152, 128, 255, 0), -12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0);
+  }
+  50% {
+    box-shadow: 0 -18px 0 -5px rgba(152, 128, 255, 0), 12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0), 18px 0 0 -5px rgba(152, 128, 255, 0), 12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), 0 18px 0 0 #9880ff, -12.72984px 12.72984px 0 0 #9880ff, -18px 0 0 0 #9880ff, -12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0);
+  }
+  62.5% {
+    box-shadow: 0 -18px 0 -5px rgba(152, 128, 255, 0), 12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0), 18px 0 0 -5px rgba(152, 128, 255, 0), 12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), 0 18px 0 -5px rgba(152, 128, 255, 0), -12.72984px 12.72984px 0 0 #9880ff, -18px 0 0 0 #9880ff, -12.72984px -12.72984px 0 0 #9880ff;
+  }
+  75% {
+    box-shadow: 0 -18px 0 0 #9880ff, 12.72984px -12.72984px 0 -5px rgba(152, 128, 255, 0), 18px 0 0 -5px rgba(152, 128, 255, 0), 12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), 0 18px 0 -5px rgba(152, 128, 255, 0), -12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), -18px 0 0 0 #9880ff, -12.72984px -12.72984px 0 0 #9880ff;
+  }
+  87.5% {
+    box-shadow: 0 -18px 0 0 #9880ff, 12.72984px -12.72984px 0 0 #9880ff, 18px 0 0 -5px rgba(152, 128, 255, 0), 12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), 0 18px 0 -5px rgba(152, 128, 255, 0), -12.72984px 12.72984px 0 -5px rgba(152, 128, 255, 0), -18px 0 0 -5px rgba(152, 128, 255, 0), -12.72984px -12.72984px 0 0 #9880ff;
+  }
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
     <div>
-      <!-- <router-link class="go-back" :to="{ name: 'ComponentDetail' }">Вернуться к компонентам</router-link> -->
-      <!-- <h3>{{ component[0].decoding }}</h3> -->
+      <router-link class="go-back" :to="{ name: 'ComponentDetail', params: { id: component.ctype_id } }">Вернуться к компонентам</router-link>
+      <h3>{{ component.decoding }}</h3>
       <table class="table table-hover table-dark">
           <thead>
               <tr>
@@ -21,7 +21,6 @@
               <td>{{ this.component.cstat }}<div class="stage" style="display: none;"><div class="dot-spin"></div></div></td>
               <td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td>
               <td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.rem }}</a></td>
-              <!-- <td><button id="disabled" class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td> -->
               <td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td>
           </tbody>
       </table>
@@ -34,7 +33,6 @@ export default {
   data() {
     return {
       component: [],
-      status: '',
     };
   },
   props: {
@@ -76,10 +74,10 @@ export default {
                 }
               } else if (response.data != null) {
                     this.component.cstat = response.data;
+                    /* this.component.conclusion = response.data.conclusion; */
                     let element = document.querySelector(".stage");
                     element.style.display = "none";
                     console.log("Status: ", this.component.cstat);
-                    /* document.getElementById("disabled").disabled = true; */
                     console.log(response);
               }
             })

@@ -175,7 +175,7 @@ def get_components():
 def component_details(id):
 
     component_detail = Comptypes.query.get(id)
-    data = [{'id': p.id, 'decoding': component_detail.decoding, 'conclusion': p.conclusion, 'qrcode': p.qrcode, 'cstat': p.cstat, 'tests': p.tests, 'rem': p.rem} for p in component_detail.components]
+    data = [{'id': p.id, 'decoding': component_detail.decoding, 'conclusion': p.conclusion, 'qrcode': p.qrcode, 'cstat': p.cstat, 'addts': p.addts, 'statts': p.statts, 'tests': p.tests, 'rem': p.rem} for p in component_detail.components]
     if component_detail:
         return jsonify(data)
     else:
@@ -185,7 +185,8 @@ def component_details(id):
 def current_component(id):
 
     current_component = Components.query.filter_by(id=id).first()
-    data = {'id': current_component.id, 'conclusion': current_component.conclusion, 'qrcode': current_component.qrcode, 'cstat': current_component.cstat, 'tests': current_component.tests, 'rem': current_component.rem}
+    current_comptype = Comptypes.query.filter_by(name=current_component.ctype).first()
+    data = {'id': current_component.id, 'conclusion': current_component.conclusion, 'qrcode': current_component.qrcode, 'cstat': current_component.cstat, 'tests': current_component.tests, 'rem': current_component.rem, 'ctype_id': current_comptype.id, 'decoding': current_comptype.decoding }
     if current_component:
         return jsonify(data)
     else:
@@ -468,17 +469,20 @@ def getresults():
 
         component = Components.query.filter_by(id=id).first()
         component.cstat = cstat
+        component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         db.session.add(component)
         db.session.commit()
         if cstat == 'Ok':
             component.cstat = 'протестирован'
+            component.conclusion = 'годен'
+            component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             db.session.add(component)
             db.session.commit()
         print("POST: ", id, cstat)
 
         getstatus(id)
 
-        return jsonify( { 'status' : cstat } )
+        return jsonify( { 'status' : cstat, 'conclusion': component.conclusion } )
 
 @app.route('/app/getstatus/<int:id>/', methods=['GET', 'POST'])
 def getstatus(id):

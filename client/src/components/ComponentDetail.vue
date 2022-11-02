@@ -7,12 +7,16 @@
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">QR-код</th>
+                <th scope="col">Время добавления в базу</th>
+                <th scope="col">Последнее время изменения статуса</th>
                 <th scope="col">Опции</th>
             </tr>
         </thead>
         <tbody v-for="c in component">
             <td>{{ c.id }}</td>          
             <td>{{ c.qrcode }}</td>
+            <td>{{ c.addts }}</td>
+            <td>{{ c.statts }}</td>
             <td><router-link class="btn btn-outline btn-info" :to="{ name: 'CurrentComponent', params: { id: c.id }}">Подробнее</router-link></td>
         </tbody>
     </table>

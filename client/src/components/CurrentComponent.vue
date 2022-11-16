@@ -9,7 +9,8 @@
           <tr><td>Статус</td><td>{{ this.component.cstat }}</td><td><div class="stage" style="display: none;"><div class="dot-spin"></div></div></td></tr>
           <tr><td>Ссылка на результаты теста</td><td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td></tr>
           <tr><td>Комментарий</td><td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.rem }}</a></td></tr>
-          <tr><td>Опции</td><td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td></tr>
+          <tr v-if="component.ctype_name == 'indicator_board' || component.ctype_name == 'fan_control_board'"><td>Опции</td><td><router-link class="link" :to="{ name: 'HandTesting', params: { id: this.component.id } }"><button class="btn btn-outline btn-info" :disabled="computedCondition" :to="{ name: 'HandTesting', params: { id: this.component.id } }">Протестировать</button></router-link></td></tr>
+          <tr v-else><td>Опции</td><td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td></tr> 
       </table>
     </div>
   </template>
@@ -91,6 +92,9 @@ export default {
 </script>
 
 <style>
+.link {
+  color: #fff;
+}
 .stage {
     display: flex;
     justify-content: center;

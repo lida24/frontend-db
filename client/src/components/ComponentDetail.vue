@@ -44,8 +44,6 @@ export default {
         .get(`http://192.168.75.11:5000/app/component/${this.id}/`)
         .then((response) => {
           this.component = response.data;
-          console.log(response.data);
-          console.log(response.data[5].addts)
         })
         .catch((error) => {
           console.log(error);

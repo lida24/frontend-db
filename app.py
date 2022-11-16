@@ -189,7 +189,7 @@ def current_component(id):
 
     current_component = Components.query.filter_by(id=id).first()
     current_comptype = Comptypes.query.filter_by(name=current_component.ctype).first()
-    data = {'id': current_component.id, 'conclusion': current_component.conclusion, 'qrcode': current_component.qrcode, 'cstat': current_component.cstat, 'tests': current_component.tests, 'rem': current_component.rem, 'ctype_id': current_comptype.id, 'decoding': current_comptype.decoding }
+    data = {'id': current_component.id, 'conclusion': current_component.conclusion, 'qrcode': current_component.qrcode, 'cstat': current_component.cstat, 'tests': current_component.tests, 'rem': current_component.rem, 'ctype_id': current_comptype.id, 'ctype_name': current_comptype.name, 'decoding': current_comptype.decoding }
     if current_component:
         return jsonify(data)
     else:
@@ -564,6 +564,20 @@ def logout_page():
 @app.route('/ping', methods=['GET'])
 def ping_pong():
     return jsonify('pong!')
+
+@app.route('/app/hand_testing/<int:id>/', methods=['POST'])
+def handle_testing(id):
+
+    conclusion = request.json['conclusion']
+    print("CONCLUSION: ", conclusion)
+
+    component = Components.query.filter_by(id=id).first()
+    component.conclusion = conclusion
+    component.cstat = 'протестирован'
+    db.session.add(component)
+    db.session.commit()
+ 
+    return jsonify(conclusion)
 
 if __name__ == '__main__':
     app.run(host='192.168.75.11', port=5000)

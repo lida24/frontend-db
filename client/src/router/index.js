@@ -25,6 +25,7 @@ import AddServer from "@/components/AddServer";
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import CurrentComponent from "@/components/CurrentComponent";
+import HandTesting from "@/components/HandTesting";
 import { store } from "../store";
 
 
@@ -196,6 +197,13 @@ const routes = [
     path: '/add_server',
     name: 'AddServer',
     component: AddServer,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/hand_testing/:id',
+    name: 'HandTesting',
+    component: HandTesting,
     props: true,
     meta: { requiresAuth: true },
   },

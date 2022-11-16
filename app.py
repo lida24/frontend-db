@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+import pytz
 import queue
 import uuid
 from flask_jwt_extended import JWTManager
@@ -128,8 +129,8 @@ comptypes_schema = ComptypeSchema(many=True)
 class Servers(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     qrcode = db.Column(db.String(length=180))
-    asts = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    vts = db.Column(db.DateTime, default=datetime.utcnow)
+    asts = db.Column(db.DateTime, nullable=False, default=datetime.date)
+    vts = db.Column(db.DateTime, default=datetime.date)
     """ aid = db.Column(db.Integer(), db.ForeignKey('plant.id')) """
     """ vid = db.Column(db.Integer(), primary_key=True) """
     cmps = db.relationship('Components', backref='components')
@@ -176,6 +177,8 @@ def component_details(id):
 
     component_detail = Comptypes.query.get(id)
     data = [{'id': p.id, 'decoding': component_detail.decoding, 'conclusion': p.conclusion, 'qrcode': p.qrcode, 'cstat': p.cstat, 'addts': p.addts, 'statts': p.statts, 'tests': p.tests, 'rem': p.rem} for p in component_detail.components]
+    for p in component_detail.components:
+        print(p.addts)
     if component_detail:
         return jsonify(data)
     else:
@@ -207,9 +210,9 @@ def add_component(username):
         errors = '505'
         return errors
     user = User.query.filter_by(username=username).first()
-    addts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    addts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     cstat = 'новый'
-    statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     tests = 'Отсутствует'
     rem = 'Отсутствует'
     owner = user.id
@@ -478,10 +481,16 @@ def getresults():
             component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             db.session.add(component)
             db.session.commit()
+        """ if cstat == 'Error':
+            component.cstat = 'протестирован'
+            component.conclusion = 'He годен'
+            component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            db.session.add(component)
+            db.session.commit()     """
         print("POST: ", id, cstat)
 
         getstatus(id)
-
+ 
         return jsonify( { 'status' : cstat, 'conclusion': component.conclusion } )
 
 @app.route('/app/getstatus/<int:id>/', methods=['GET', 'POST'])
@@ -490,7 +499,8 @@ def getstatus(id):
         print("/app/getstatus ", component.cstat)
         cstat = component.cstat
 
-        return jsonify(cstat)
+        """ return jsonify(cstat) """
+        return jsonify( { 'status' : cstat, 'conclusion': component.conclusion } )
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

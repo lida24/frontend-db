@@ -3,26 +3,13 @@
       <router-link class="go-back" :to="{ name: 'ComponentDetail', params: { id: component.ctype_id } }">Вернуться к компонентам</router-link>
       <h3>{{ component.decoding }}</h3>
       <table class="table table-hover table-dark">
-          <thead>
-              <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">Заключение</th>
-                  <th scope="col">QR-код</th>
-                  <th scope="col">Статус</th>
-                  <th scope="col">Ссылка на результаты теста</th>
-                  <th scope="col">Комментарий</th>
-                  <th scope="col">Опции</th>
-              </tr>
-          </thead>
-          <tbody>
-              <td>{{ this.component.id }}</td>          
-              <td>{{ this.component.conclusion }}</td>
-              <td>{{ this.component.qrcode }}</td>
-              <td>{{ this.component.cstat }}<div class="stage" style="display: none;"><div class="dot-spin"></div></div></td>
-              <td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td>
-              <td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.rem }}</a></td>
-              <td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td>
-          </tbody>
+          <tr><td>ID</td><td>{{ this.component.id }}</td></tr>
+          <tr><td>Заключение</td><td>{{ this.component.conclusion }}</td></tr>
+          <tr><td>QR-код</td><td>{{ this.component.qrcode }}</td></tr>
+          <tr><td>Статус</td><td>{{ this.component.cstat }}</td><td><div class="stage" style="display: none;"><div class="dot-spin"></div></div></td></tr>
+          <tr><td>Ссылка на результаты теста</td><td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td></tr>
+          <tr><td>Комментарий</td><td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.rem }}</a></td></tr>
+          <tr><td>Опции</td><td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td></tr>
       </table>
     </div>
   </template>
@@ -66,15 +53,15 @@ export default {
         setInterval(() => { axios
             .get(`http://192.168.75.11:5000/app/getstatus/${this.component.id}/`)
             .then((response) => {
-              if (response.data == null) {
+              if (response.data.status == null) {
                 this.component.cstat = 'тестируется';
                 let elem = document.querySelector(".stage");
                 if (elem != null) {
                   elem.style.display = "flex";
                 }
-              } else if (response.data != null) {
-                    this.component.cstat = response.data;
-                    /* this.component.conclusion = response.data.conclusion; */
+              } else if (response.data.status != null) {
+                    this.component.cstat = response.data.status;
+                    this.component.conclusion = response.data.conclusion;
                     let element = document.querySelector(".stage");
                     element.style.display = "none";
                     console.log("Status: ", this.component.cstat);

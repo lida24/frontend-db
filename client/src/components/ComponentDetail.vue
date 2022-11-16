@@ -15,8 +15,8 @@
         <tbody v-for="c in component">
             <td>{{ c.id }}</td>          
             <td>{{ c.qrcode }}</td>
-            <td>{{ c.addts }}</td>
-            <td>{{ c.statts }}</td>
+            <td>{{ c.addts.split('GMT').join('').split('Mon,').join('').split('Tue,').join('').split('Wed,').join('').split('Thu,').join('').split('Fri,').join('').split('Sat,').join('').split('Sun,').join('') }}</td>
+            <td>{{ c.statts.split('GMT').join('').split('Mon,').join('').split('Tue,').join('').split('Wed,').join('').split('Thu,').join('').split('Fri,').join('').split('Sat,').join('').split('Sun,').join('') }}</td>
             <td><router-link class="btn btn-outline btn-info" :to="{ name: 'CurrentComponent', params: { id: c.id }}">Подробнее</router-link></td>
         </tbody>
     </table>
@@ -45,6 +45,7 @@ export default {
         .then((response) => {
           this.component = response.data;
           console.log(response.data);
+          console.log(response.data[5].addts)
         })
         .catch((error) => {
           console.log(error);

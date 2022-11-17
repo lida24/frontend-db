@@ -4,7 +4,11 @@
       <h3>{{ component.decoding }}</h3>
       <table class="table table-hover table-dark">
           <tr><td>ID</td><td>{{ this.component.id }}</td></tr>
-          <tr><td>Заключение</td><td>{{ this.component.conclusion }}</td></tr>
+          <tr>
+            <td>Заключение</td>
+            <td v-if="this.component.conclusion == 'годен'">{{ this.component.conclusion }}✅</td>
+            <td v-else-if="this.component.conclusion == 'не годен'">{{ this.component.conclusion }}<span class="img">❌</span></td>
+          </tr>
           <tr><td>QR-код</td><td>{{ this.component.qrcode }}</td></tr>
           <tr><td>Статус</td><td>{{ this.component.cstat }}</td><td><div class="stage" style="display: none;"><div class="dot-spin"></div></div></td></tr>
           <tr><td>Ссылка на результаты теста</td><td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td></tr>
@@ -95,6 +99,11 @@ export default {
 .link {
   color: #fff;
 }
+/* .img {
+  width: 20px;
+  height: 32px;
+  margin-left: 5px;
+} */
 .stage {
     display: flex;
     justify-content: center;

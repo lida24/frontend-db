@@ -90,7 +90,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/add_chassis',
+    path: '/add_chassis/:id',
     name: 'AddChassis',
     component: AddChassis,
     meta: { requiresAuth: true },
@@ -194,7 +194,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/add_server',
+    path: '/add_server/:id',
     name: 'AddServer',
     component: AddServer,
     props: true,

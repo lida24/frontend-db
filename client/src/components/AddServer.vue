@@ -33,26 +33,42 @@
                 Добавить
             </button>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleFans40">
             <div class="title">
                 Монтаж 6 нижних вентиляторов в корпус
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddFan40', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_fans_40()" class="btn btn-primary add-server" :disabled="computedConditionFans40">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleIndicatorBoard">
             <div class="title">
                 Монтаж платы индикации
             </div>
             <span class="is-disabled">
-                <router-link class="btn btn-primary add-server" :to="{ name: 'AddIndicatorBoard', params: { id: n }}">Добавить</router-link>
+                <button @click="add_indicator_board()" class="btn btn-primary add-server" :disabled="computedConditionIndicatorBoard">
+                    Добавить
+                </button>
             </span>
         </div>
+        <div v-for="c in components" :key="c.id">
+            <div v-if="c.ctype == 'power_management_module'" class="rectangle" style="backgroundColor: #22ed4ef2">
+                <div class="title">
+                    Монтаж платы управления питанием
+                </div>
+                <span class="is-disabled" style="cursor: not-allowed">
+                    <a class="btn btn-primary add-server" style="backgroundColor: #636869; borderColor: #636869; color: #fff; opacity: 1;" :aria-disabled="true">Добавить</a>
+                </span>
+            </div>
+        </div> 
         <div class="rectangle">
             <div class="title">
                 Монтаж платы управления питанием
             </div>
             <span class="is-disabled">
-                <router-link class="btn btn-primary add-server" :to="{ name: 'AddPowerManagementModule', params: { id: n }}">Добавить</router-link>
+                <router-link class="btn btn-primary add-server" :to="{ name: 'AddPowerManagementModule', params: { id: id }}">Добавить</router-link>
             </span>
         </div>
         <div class="rectangle">
@@ -158,7 +174,7 @@
         height: 100px;
         margin: 40px 10px;
         /* background-color: #22ed4ef2; */
-        background-color: #343a40;
+        /* background-color: #343a40; */
         display: flex;
         justify-content: space-between;
         box-sizing: border-box;
@@ -186,11 +202,16 @@
 
 <script>
    import axios from "axios";
-    
     export default {
       data() {
         return {
-          n: Number,
+          /* n: Number, */
+          /* components: [], */
+          indicator_board: '',
+          fans_40: '',
+          formData : {
+            indicator_board: '',
+          }
         };
       },
       props: {
@@ -206,16 +227,70 @@
             type: [Number, String],
             required: true,
         },
+        stat: {
+            type: [Number, String],
+            required: true,
+        },
       },
-    
+      methods: {
+        add_indicator_board() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_indicator_board/${this.id}/`, this.formData)
+          .then((response) => {
+            console.log(response.data);
+            this.indicator_board = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.indicator_board = response.data.indicator_board;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_fans_40() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_fan40/${this.id}/`, this.formData)
+          .then((response) => {
+            console.log(response.data);
+            this.fans_40 = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.fans_40 = response.data.fans_40;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+      }, 
       created() {
         axios
           .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
-            this.n = response.data;
+            /* this.components = response.data; */
+            /* this.n = response.data; */
+            /* console.log("Components: ",this.components); */
+            this.indicator_board = response.data.indicator_board;
+            this.fans_40 = response.data.fans_40;
             console.log(response);
-            console.log("AddServer: ", this.success);
-            if (this.success) {
+            /* console.log(this.id);
+            console.log("AddServer: ", this.success); */
+            /* console.log(this.formData.indicator_board);
+            console.log(this.formData.length);
+            console.log(!this.formData.indicator_board && this.formData.indicator_board.length > 0);
+            console.log(this.formData.indicator_board && this.formData.indicator_board.length > 0); */
+           /*  if (this.stat == 'установлен в изделие') {
                 console.log("SUCCESS");
                 
                 let elem = document.getElementsByClassName("rectangle");
@@ -233,11 +308,37 @@
                 btn[this.order].style.color = "#ffffff";
                 btn[this.order].style.opacity = "1";
                 btn[this.order].setAttribute('aria-disabled', true);
-            }
+            } */
           })
           .catch((error) => {
             console.log(error);
           });
+      },
+      computed: {
+        computedConditionIndicatorBoard() {
+            if (this.indicator_board) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleIndicatorBoard() {
+            if (this.indicator_board) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionFans40() {
+            if (this.fans_40) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleFans40() {
+            if (this.fans_40) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        }
       },
     };
 </script>

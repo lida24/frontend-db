@@ -52,7 +52,7 @@ export default {
         .then((response) => {
           console.log(response);
           this.formData.success = true;
-          this.$router.push({ name: "AddServer", params: { id: response.data, success: this.formData.success, order: this.formData.order }});
+          this.$router.push({ name: "AddServer", params: { id: response.data.server_id, success: this.formData.success, order: this.formData.order, stat: response.data.status }});
         })
         .catch((error) => {
           console.log(error, error.response);

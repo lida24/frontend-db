@@ -138,18 +138,22 @@ class Servers(db.Model):
     """ tstres = db.Column(db.String(length=2048)) """
     sstat = db.Column(db.String(length=30), default='новый')
     """ snum = db.Column(db.String(length=30), unique=True) """
+    indicator_board = db.Column(db.Boolean(), unique=False, default=False)
+    fans_40 = db.Column(db.Boolean(), unique=False, default=False)
 
-    def __init__(self, qrcode, asts, vts, cmps, sstat):
+    def __init__(self, qrcode, asts, vts, cmps, sstat, indicator_board, fans_40):
         self.qrcode = qrcode
         self.asts = asts
         self.vts = vts
         self.cmps = cmps
         self.sstat = sstat
+        self.indicator_board = indicator_board
+        self.fans_40 = fans_40
 
 # schema
 class ServerSchema(ma.SQLAlchemySchema):
     class  Meta:
-        fields = ("id", "qrcode", "asts", "vts", "sstat") 
+        fields = ("id", "qrcode", "asts", "vts", "sstat", "indicator_board", "fans_40")
 
 # schema obj
 server_schema = ServerSchema() 
@@ -169,7 +173,9 @@ def get_servers():
 #  ------------------ get all components
 @app.route('/app/component_list', methods=['GET'])
 def get_components():
-    all_components = Comptypes.query.all()
+    """ all_components = Comptypes.query.all() """
+    all_components = [Comptypes.query.filter_by(name='chassis').first(), Comptypes.query.filter_by(name='motherboard').first(), Comptypes.query.filter_by(name='hdd_backplane').first(), Comptypes.query.filter_by(name='raiser_board').first(), Comptypes.query.filter_by(name='power_management_module').first()]
+    print(all_components)
     return  comptypes_schema.jsonify(all_components)
 
 @app.route('/app/component/<id>/', methods=['GET'])
@@ -236,7 +242,9 @@ def add_chassis():
                                    asts=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                    vts =datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                    sstat='новый',
-                                   cmps=[result]
+                                   cmps=[result],
+                                   indicator_board=False,
+                                   fans_40=False,
                                   )
         server_to_create.cstat = 'установлен в изделие'
         result.cstat = 'установлен в изделие'
@@ -249,7 +257,14 @@ def add_chassis():
 
 @app.route('/app/get_chassis/<int:server_id>/', methods=['GET', 'POST'])
 def get_chassis(server_id):
-        return jsonify(server_id)
+        """ cmps_list = [] """
+        server = Servers.query.filter_by(id=server_id).first()
+        """ data = [{'id': cmps.id, 'ctype': cmps.ctype, 'conclusion': cmps.conclusion, 'qrcode': cmps.qrcode, 'cstat': cmps.cstat, 'addts': cmps.addts, 'statts': cmps.statts, 'tests': cmps.tests, 'rem': cmps.rem} for cmps in server.cmps] """
+        """ for cmps in server.cmps:
+            cmps_list += [cmps]    
+        print(cmps_list) """
+        """ print(data) """
+        return server_schema.jsonify(server)
 
 @app.route('/app/add_fan140/<int:server_id>/', methods=['GET', 'POST'])
 def add_fan140(server_id):
@@ -277,30 +292,24 @@ def add_fan_control_board(server_id):
 
 @app.route('/app/add_fan40/<int:server_id>/', methods=['GET', 'POST'])
 def add_fan40(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.fans_40 = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        for cmps in server.cmps:
-            print("COMPONENTS", cmps)
-
-        return jsonify(server.id)
+        return jsonify(server.fans_40)
 
 @app.route('/app/add_indicator_board/<int:server_id>/', methods=['GET', 'POST'])
 def add_indicator_board(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        """ result = Components.query.filter_by(qrcode=request.json['qrcode']).first() """
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.indicator_board = True
+        """ result.cstat = 'установлен в изделие' """
         db.session.add(server)
-        db.session.add(result)
+        """ db.session.add(result) """
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify(server.indicator_board)
 
 @app.route('/app/add_power_management_module/<int:server_id>/', methods=['GET', 'POST'])
 def add_power_management_module(server_id):
@@ -312,7 +321,7 @@ def add_power_management_module(server_id):
         db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify({"server_id": server.id, "status": result.cstat})
 
 @app.route('/app/add_motherboard/<int:server_id>/', methods=['GET', 'POST'])
 def add_motherboard(server_id):
@@ -468,6 +477,8 @@ def getresults():
 
         id = request.json['id']
         cstat = request.json['cstat']
+        error = request.json['error']
+        print(error)
         print(request)
 
         component = Components.query.filter_by(id=id).first()
@@ -481,17 +492,20 @@ def getresults():
             component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             db.session.add(component)
             db.session.commit()
-        """ if cstat == 'Error':
+        if cstat == 'Error':
+            if error == None:
+                error = 'Ошибка'
             component.cstat = 'протестирован'
-            component.conclusion = 'He годен'
+            component.conclusion = 'нe годен'
+            component.rem = error
             component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             db.session.add(component)
-            db.session.commit()     """
+            db.session.commit()
         print("POST: ", id, cstat)
 
         getstatus(id)
  
-        return jsonify( { 'status' : cstat, 'conclusion': component.conclusion } )
+        return jsonify( { 'status' : cstat, 'conclusion': component.conclusion, 'rem': component.rem } )
 
 @app.route('/app/getstatus/<int:id>/', methods=['GET', 'POST'])
 def getstatus(id):
@@ -500,7 +514,7 @@ def getstatus(id):
         cstat = component.cstat
 
         """ return jsonify(cstat) """
-        return jsonify( { 'status' : cstat, 'conclusion': component.conclusion } )
+        return jsonify( { 'status' : cstat, 'conclusion': component.conclusion, 'rem': component.rem } )
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -569,7 +583,6 @@ def ping_pong():
 def handle_testing(id):
 
     conclusion = request.json['conclusion']
-    print("CONCLUSION: ", conclusion)
 
     component = Components.query.filter_by(id=id).first()
     component.conclusion = conclusion

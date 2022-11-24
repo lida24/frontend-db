@@ -21,14 +21,26 @@
       </defs>
      </svg>
      <h4 class="h3 mb-3 font-weight-normal">
-                Введите QR-код
+                Выберите тип компонента
      </h4>
+     <!-- <br />
+        <div class="btn btn-info">Корпус<input type="radio" value="chassis" class="btn btn-info radio" v-model="form.ctype"/></div>
+        <div class="btn btn-info">Материнская плата<input type="radio" value="motherboard" class="btn btn-info radio" v-model="form.ctype"/></div>
+        <div class="btn btn-info">Модуль объединительный<input type="radio" value="hdd_backplane" class="btn btn-info radio" v-model="form.ctype"/></div>
+        <div class="btn btn-info">Плата райзера<input type="radio" value="raiser_board" class="btn btn-info radio" v-model="form.ctype"/></div>
+        <div class="btn btn-info">Модуль управления питанием<input type="radio" value="power_management_module" class="btn btn-info radio" v-model="form.ctype"/></div>
+      <br />
+      <br />
+      <br />
+      <br /> -->
       <select class="form-control" v-model="form.ctype">
         <option disabled value="">Выберите тип компонента</option>
         <option v-for="ctype in ctypes">{{ ctype }}</option>
       </select>
-      <br />
-
+      <h4 class="h3 mb-3 font-weight-normal">
+                Введите QR-код
+     </h4>
+     <br />
       <input
         type="text"
         placeholder="QR-код"
@@ -108,4 +120,7 @@ export default {
 .alert {
     display: none;
   }
+.radio {
+    margin-left: 5px;
+}
 </style>

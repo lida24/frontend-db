@@ -115,12 +115,12 @@
                 </button>
             </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleMotherboard">
             <div class="title">
                 Монтаж материнской платы в корпус
             </div>
             <span class="is-disabled">
-                <button class="btn btn-primary add-server">
+                <button class="btn btn-primary add-server" :disabled="computedConditionMotherboard">
                     <router-link :to="{ name: 'AddMotherBoard', params: { id: this.id }}">Добавить</router-link>
                 </button>
             </span>
@@ -146,41 +146,67 @@
             </span>
         </div>
         <h5 class="h4 mb-3 font-weight-normal step-title">2 этап</h5>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleDiskBasket4">
             <div class="title">
                 Монтаж дисковой корзины 4 (над материнской платой)
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddDiskBasket', params: { id: n, count: 4 }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button class="btn btn-primary add-server" :disabled="computedConditionDiskBasket4">
+                    <router-link :to="{ name: 'AddDiskBasket4', params: { id: this.id }}">Добавить</router-link>
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleDiskBasket3">
             <div class="title">
                 Монтаж дисковой корзины 3
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddDiskBasket', params: { id: n, count: 3 }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button class="btn btn-primary add-server" :disabled="computedConditionDiskBasket3">
+                    <router-link :to="{ name: 'AddDiskBasket3', params: { id: this.id }}">Добавить</router-link>
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleDiskBasket2">
             <div class="title">
                 Монтаж дисковой корзины 2
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddDiskBasket', params: { id: n, count: 2 }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button class="btn btn-primary add-server" :disabled="computedConditionDiskBasket2">
+                    <router-link :to="{ name: 'AddDiskBasket2', params: { id: this.id }}">Добавить</router-link>
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleDiskBasket1">
             <div class="title">
                 Монтаж дисковой корзины 1
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddDiskBasket', params: { id: n, count: 1 }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button class="btn btn-primary add-server" :disabled="computedConditionDiskBasket1">
+                    <router-link :to="{ name: 'AddDiskBasket1', params: { id: this.id }}">Добавить</router-link>
+                </button>
+            </span>
         </div>
         <h5 class="h4 mb-3 font-weight-normal step-title">3 этап</h5>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStylePowerSupply2K6">
             <div class="title">
                 Установка блоков питания 2.6 кВт в соответствующие отсеки
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddPowerSupply2K6', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_power_supply_2k6()" class="btn btn-primary add-server" :disabled="computedConditionPowerSupply2K6">
+                    Добавить
+                </button>
+            </span>
         </div>
     </div>
 </template>
 
 <style>
+    a {
+        color: #fff !important;
+        text-decoration: none;
+        background-color: transparent;
+        /* pointer-events: none; */
+    }
     .main-title {
       margin-top: 1rem !important;
       font-weight: 600 !important;
@@ -244,6 +270,12 @@
           raiser_2U_board: '',
           raid_card: '',
           cables_mb: '',
+          motherboard: '',
+          power_supply_2k6: '',
+          disk_basket4: '',
+          disk_basket3: '',
+          disk_basket2: '',
+          disk_basket1: '',
         };
       },
       props: {
@@ -525,6 +557,26 @@
             console.log(error);
           });
         },
+        add_power_supply_2k6() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_power_supply_2k6/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.power_supply_2k6 = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.power_supply_2k6 = response.data.power_supply_2k6;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
       }, 
       created() {
         axios
@@ -543,6 +595,12 @@
             this.raiser_2U_board = response.data.raiser_2U_board;
             this.raid_card = response.data.raid_card;
             this.cables_mb = response.data.cables_mb;
+            this.motherboard = response.data.motherboard;
+            this.power_supply_2k6 = response.data.power_supply_2k6;
+            this.disk_basket4 = response.data.disk_basket4;
+            this.disk_basket3 = response.data.disk_basket3;
+            this.disk_basket2 = response.data.disk_basket2;
+            this.disk_basket1 = response.data.disk_basket1;
             console.log(response);
            /*  if (this.stat == 'установлен в изделие') {
                 console.log("SUCCESS");
@@ -721,6 +779,78 @@
         },
         computedStyleCablesMB() {
             if (this.cables_mb) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionMotherboard() {
+            if (this.motherboard) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleMotherboard() {
+            if (this.motherboard) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionPowerSupply2K6() {
+            if (this.power_supply_2k6) {
+                return true;
+            }
+            return false;
+        },
+        computedStylePowerSupply2K6() {
+            if (this.power_supply_2k6) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionDiskBasket4() {
+            if (this.disk_basket4) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleDiskBasket4() {
+            if (this.disk_basket4) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionDiskBasket3() {
+            if (this.disk_basket3) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleDiskBasket3() {
+            if (this.disk_basket3) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionDiskBasket2() {
+            if (this.disk_basket2) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleDiskBasket2() {
+            if (this.disk_basket2) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionDiskBasket1() {
+            if (this.disk_basket1) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleDiskBasket1() {
+            if (this.disk_basket1) {
                 return {backgroundColor : '#22ed4ef2'};
             }
             return {backgroundColor : '#343a40'};

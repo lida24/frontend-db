@@ -152,8 +152,14 @@ class Servers(db.Model):
     raid_card = db.Column(db.Boolean(), unique=False, default=False)
     cables_mb = db.Column(db.Boolean(), unique=False, default=False)
     motherboard = db.Column(db.Boolean(), unique=False, default=False)
+    power_supply_2k6 = db.Column(db.Boolean(), unique=False, default=False)
+    disk_basket4 = db.Column(db.Boolean(), unique=False, default=False)
+    disk_basket3 = db.Column(db.Boolean(), unique=False, default=False)
+    disk_basket2 = db.Column(db.Boolean(), unique=False, default=False)
+    disk_basket1 = db.Column(db.Boolean(), unique=False, default=False)
 
-    def __init__(self, qrcode, asts, vts, cmps, sstat, indicator_board, fans_40, cables, fans_140, fan_control_board, power_management_module, cables_pmm, cables_fcb, memory_and_ssd, network_card, raiser_2U_board, raid_card, cables_mb, motherboard):
+
+    def __init__(self, qrcode, asts, vts, cmps, sstat, indicator_board, fans_40, cables, fans_140, fan_control_board, power_management_module, cables_pmm, cables_fcb, memory_and_ssd, network_card, raiser_2U_board, raid_card, cables_mb, motherboard, power_supply_2k6, disk_basket4, disk_basket3, disk_basket2, disk_basket1):
         self.qrcode = qrcode
         self.asts = asts
         self.vts = vts
@@ -173,11 +179,16 @@ class Servers(db.Model):
         self.raid_card = raid_card
         self.cables_mb = cables_mb
         self.motherboard = motherboard
+        self.power_supply_2k6 = power_supply_2k6
+        self.disk_basket4 = disk_basket4
+        self.disk_basket3 = disk_basket3
+        self.disk_basket2 = disk_basket2
+        self.disk_basket1 = disk_basket1
 
 # schema
 class ServerSchema(ma.SQLAlchemySchema):
     class  Meta:
-        fields = ("id", "qrcode", "asts", "vts", "sstat", "indicator_board", "fans_40", "cables", "fans_140", "fan_control_board", "power_management_module", "cables_pmm", "cables_fcb", "memory_and_ssd", "network_card", "raiser_2U_board", "raid_card", "cables_mb", "motherboard")
+        fields = ("id", "qrcode", "asts", "vts", "sstat", "indicator_board", "fans_40", "cables", "fans_140", "fan_control_board", "power_management_module", "cables_pmm", "cables_fcb", "memory_and_ssd", "network_card", "raiser_2U_board", "raid_card", "cables_mb", "motherboard", "power_supply_2k6", "disk_basket4", "disk_basket3", "disk_basket2", "disk_basket1")
 
 # schema obj
 server_schema = ServerSchema() 
@@ -280,7 +291,12 @@ def add_chassis():
                                    raiser_2U_board=False,
                                    raid_card=False,
                                    cables_mb=False,
-                                   motherboard=False
+                                   motherboard=False,
+                                   power_supply_2k6=False,
+                                   disk_basket4=False,
+                                   disk_basket3=False,
+                                   disk_basket2=False,
+                                   disk_basket1=False,
                                   )
         server_to_create.cstat = 'установлен в изделие'
         result.cstat = 'установлен в изделие'
@@ -393,6 +409,7 @@ def add_motherboard(server_id):
         server.cmps += [result]
         server.motherboard = True
         result.cstat = 'установлен в изделие'
+        result.statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(server)
         db.session.add(result)
         db.session.commit()
@@ -471,38 +488,70 @@ def add_raid_card(server_id):
 
         return jsonify(server.raid_card)
 
-@app.route('/app/add_disk_basket/<int:server_id>/', methods=['GET', 'POST'])
-def add_disk_basket(server_id):
-        server = Servers.query.filter_by(id=server_id).first()
-        hdd_backplane = Components.query.filter_by(qrcode=request.json['hdd_backplane_qrcode']).first()
-        sas_expander = Components.query.filter_by(qrcode=request.json['sas_expander_qrcode']).first()
-        server.cmps += [hdd_backplane]
-        server.cmps += [sas_expander]
-        hdd_backplane.cstat = 'установлен в изделие'
-        sas_expander.cstat = 'установлен в изделие'
-        db.session.add(server)
-        db.session.add(hdd_backplane)
-        db.session.add(sas_expander)
-        db.session.commit()
-
-        return jsonify(server.id)
-
-@app.route('/app/add_power_supply_2k6/<int:server_id>/', methods=['GET', 'POST'])
-def add_power_supply_2k6(server_id):
+@app.route('/app/add_disk_basket4/<int:server_id>/', methods=['GET', 'POST'])
+def add_disk_basket4(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
+        server.disk_basket4 = True
         server.cmps += [result]
         result.cstat = 'установлен в изделие'
+        result.statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(server)
         db.session.add(result)
         db.session.commit()
 
-        for cmps in server.cmps:
-            print("COMPONENTS", cmps)
-            print("CTYPE", cmps.ctype)
-            print("SERVER_ID", cmps.server_id)
+        return jsonify(server.disk_basket4)
 
-        return jsonify(server.id)
+@app.route('/app/add_disk_basket3/<int:server_id>/', methods=['GET', 'POST'])
+def add_disk_basket3(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.disk_basket3 = True
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        result.statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.disk_basket3)
+
+@app.route('/app/add_disk_basket2/<int:server_id>/', methods=['GET', 'POST'])
+def add_disk_basket2(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.disk_basket2 = True
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        result.statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.disk_basket2)
+
+@app.route('/app/add_disk_basket1/<int:server_id>/', methods=['GET', 'POST'])
+def add_disk_basket1(server_id):
+        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+        server = Servers.query.filter_by(id=server_id).first()
+        server.disk_basket1 = True
+        server.cmps += [result]
+        result.cstat = 'установлен в изделие'
+        result.statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.session.add(server)
+        db.session.add(result)
+        db.session.commit()
+
+        return jsonify(server.disk_basket1)
+
+@app.route('/app/add_power_supply_2k6/<int:server_id>/', methods=['GET', 'POST'])
+def add_power_supply_2k6(server_id):
+        server = Servers.query.filter_by(id=server_id).first()
+        server.power_supply_2k6 = True
+        db.session.add(server)
+        db.session.commit()
+
+        return jsonify(server.power_supply_2k6)
 
 @app.route('/app/testing/<int:id>/', methods=['GET'])
 def testing(id):

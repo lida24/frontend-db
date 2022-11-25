@@ -1,10 +1,10 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <router-link class="navbar-brand" :to="{ name: 'Home' }">Система контроля</router-link>
+        <router-link class="navbar-brand" :to="{ name: 'SelectAction' }">Система контроля</router-link>
         <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="#">Admin</a>
+                <!-- <a class="nav-link" href="#">Admin</a> -->
             </li>
         </ul>
         <ul v-if="isLoggedIn" class="navbar-nav">

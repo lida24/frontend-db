@@ -19,7 +19,10 @@ import AddRaiser2UBoard from "@/components/AddRaiser2UBoard";
 import AddNetworkCard from "@/components/AddNetworkCard";
 import AddRaiser1UBoard from "@/components/AddRaiser1UBoard";
 import AddRaidCard from "@/components/AddRaidCard";
-import AddDiskBasket from "@/components/AddDiskBasket";
+import AddDiskBasket4 from "@/components/AddDiskBasket4";
+import AddDiskBasket3 from "@/components/AddDiskBasket3";
+import AddDiskBasket2 from "@/components/AddDiskBasket2";
+import AddDiskBasket1 from "@/components/AddDiskBasket1";
 import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
 import AddServer from "@/components/AddServer";
 import Login from "@/components/Login";
@@ -180,9 +183,30 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/add_disk_basket/:id',
-    name: 'AddDiskBasket',
-    component: AddDiskBasket,
+    path: '/add_disk_basket4/:id',
+    name: 'AddDiskBasket4',
+    component: AddDiskBasket4,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/add_disk_basket3/:id',
+    name: 'AddDiskBasket3',
+    component: AddDiskBasket3,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/add_disk_basket2/:id',
+    name: 'AddDiskBasket2',
+    component: AddDiskBasket2,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/add_disk_basket1/:id',
+    name: 'AddDiskBasket1',
+    component: AddDiskBasket1,
     props: true,
     meta: { requiresAuth: true },
   },

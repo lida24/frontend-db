@@ -138,10 +138,22 @@ class Servers(db.Model):
     """ tstres = db.Column(db.String(length=2048)) """
     sstat = db.Column(db.String(length=30), default='новый')
     """ snum = db.Column(db.String(length=30), unique=True) """
+    cables = db.Column(db.Boolean(), unique=False, default=False)
+    fans_140 = db.Column(db.Boolean(), unique=False, default=False)
     indicator_board = db.Column(db.Boolean(), unique=False, default=False)
     fans_40 = db.Column(db.Boolean(), unique=False, default=False)
+    fan_control_board = db.Column(db.Boolean(), unique=False, default=False)
+    power_management_module = db.Column(db.Boolean(), unique=False, default=False)
+    cables_pmm = db.Column(db.Boolean(), unique=False, default=False)
+    cables_fcb = db.Column(db.Boolean(), unique=False, default=False)
+    memory_and_ssd = db.Column(db.Boolean(), unique=False, default=False)
+    network_card = db.Column(db.Boolean(), unique=False, default=False)
+    raiser_2U_board = db.Column(db.Boolean(), unique=False, default=False)
+    raid_card = db.Column(db.Boolean(), unique=False, default=False)
+    cables_mb = db.Column(db.Boolean(), unique=False, default=False)
+    motherboard = db.Column(db.Boolean(), unique=False, default=False)
 
-    def __init__(self, qrcode, asts, vts, cmps, sstat, indicator_board, fans_40):
+    def __init__(self, qrcode, asts, vts, cmps, sstat, indicator_board, fans_40, cables, fans_140, fan_control_board, power_management_module, cables_pmm, cables_fcb, memory_and_ssd, network_card, raiser_2U_board, raid_card, cables_mb, motherboard):
         self.qrcode = qrcode
         self.asts = asts
         self.vts = vts
@@ -149,11 +161,23 @@ class Servers(db.Model):
         self.sstat = sstat
         self.indicator_board = indicator_board
         self.fans_40 = fans_40
+        self.cables = cables
+        self.fans_140 = fans_140
+        self.fan_control_board = fan_control_board
+        self.power_management_module = power_management_module
+        self.cables_pmm = cables_pmm
+        self.cables_fcb = cables_fcb
+        self.memory_and_ssd = memory_and_ssd
+        self.network_card = network_card
+        self.raiser_2U_board = raiser_2U_board
+        self.raid_card = raid_card
+        self.cables_mb = cables_mb
+        self.motherboard = motherboard
 
 # schema
 class ServerSchema(ma.SQLAlchemySchema):
     class  Meta:
-        fields = ("id", "qrcode", "asts", "vts", "sstat", "indicator_board", "fans_40")
+        fields = ("id", "qrcode", "asts", "vts", "sstat", "indicator_board", "fans_40", "cables", "fans_140", "fan_control_board", "power_management_module", "cables_pmm", "cables_fcb", "memory_and_ssd", "network_card", "raiser_2U_board", "raid_card", "cables_mb", "motherboard")
 
 # schema obj
 server_schema = ServerSchema() 
@@ -243,8 +267,20 @@ def add_chassis():
                                    vts =datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                    sstat='новый',
                                    cmps=[result],
+                                   cables=False,
+                                   fans_140=False,
                                    indicator_board=False,
                                    fans_40=False,
+                                   fan_control_board=False,
+                                   power_management_module=False,
+                                   cables_fcb=False,
+                                   cables_pmm=False,
+                                   memory_and_ssd=False,
+                                   network_card=False,
+                                   raiser_2U_board=False,
+                                   raid_card=False,
+                                   cables_mb=False,
+                                   motherboard=False
                                   )
         server_to_create.cstat = 'установлен в изделие'
         result.cstat = 'установлен в изделие'
@@ -266,29 +302,41 @@ def get_chassis(server_id):
         """ print(data) """
         return server_schema.jsonify(server)
 
-@app.route('/app/add_fan140/<int:server_id>/', methods=['GET', 'POST'])
-def add_fan140(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
+@app.route('/app/add_cables/<int:server_id>/', methods=['GET', 'POST'])
+def add_cables(server_id):
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.cables = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify(server.cables)
+
+@app.route('/app/add_fan140/<int:server_id>/', methods=['GET', 'POST'])
+def add_fan140(server_id):
+        server = Servers.query.filter_by(id=server_id).first()
+        server.fans_140 = True
+        db.session.add(server)
+        db.session.commit()
+
+        return jsonify(server.fans_140)
 
 @app.route('/app/add_fan_control_board/<int:server_id>/', methods=['GET', 'POST'])
 def add_fan_control_board(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.fan_control_board = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify(server.fan_control_board)
+
+@app.route('/app/add_cables_fcb/<int:server_id>/', methods=['GET', 'POST'])
+def add_cables_fcb(server_id):
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cables_fcb = True
+        db.session.add(server)
+        db.session.commit()
+
+        return jsonify(server.cables_fcb)
 
 @app.route('/app/add_fan40/<int:server_id>/', methods=['GET', 'POST'])
 def add_fan40(server_id):
@@ -313,27 +361,43 @@ def add_indicator_board(server_id):
 
 @app.route('/app/add_power_management_module/<int:server_id>/', methods=['GET', 'POST'])
 def add_power_management_module(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.power_management_module = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        return jsonify({"server_id": server.id, "status": result.cstat})
+        return jsonify(server.power_management_module)
+
+@app.route('/app/add_cables_pmm/<int:server_id>/', methods=['GET', 'POST'])
+def add_cables_pmm(server_id):
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cables_pmm = True
+        db.session.add(server)
+        db.session.commit()
+
+        return jsonify(server.cables_pmm)
+
+@app.route('/app/add_memory_and_ssd/<int:server_id>/', methods=['GET', 'POST'])
+def add_memory_and_ssd(server_id):
+        server = Servers.query.filter_by(id=server_id).first()
+        server.memory_and_ssd = True
+        db.session.add(server)
+        db.session.commit()
+
+        return jsonify(server.memory_and_ssd)
 
 @app.route('/app/add_motherboard/<int:server_id>/', methods=['GET', 'POST'])
 def add_motherboard(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
         server.cmps += [result]
+        server.motherboard = True
         result.cstat = 'установлен в изделие'
         db.session.add(server)
         db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)    
+        return jsonify(server.motherboard)    
 
 @app.route('/app/add_ddr4_memory_module/<int:server_id>/', methods=['GET', 'POST'])
 def add_ddr4_memory_module(server_id):
@@ -361,27 +425,21 @@ def add_m2_ssd(server_id):
 
 @app.route('/app/add_raiser_2U_board/<int:server_id>/', methods=['GET', 'POST'])
 def add_raiser_2U_board(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.raiser_2U_board = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify(server.raiser_2U_board)
 
 @app.route('/app/add_network_card/<int:server_id>/', methods=['GET', 'POST'])
 def add_network_card(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.network_card = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify(server.network_card)
 
 @app.route('/app/add_raiser_1U_board/<int:server_id>/', methods=['GET', 'POST'])
 def add_raiser_1U_board(server_id):
@@ -395,18 +453,23 @@ def add_raiser_1U_board(server_id):
 
         return jsonify(server.id)
 
+@app.route('/app/add_cables_mb/<int:server_id>/', methods=['GET', 'POST'])
+def add_cables_mb(server_id):
+        server = Servers.query.filter_by(id=server_id).first()
+        server.cables_mb = True
+        db.session.add(server)
+        db.session.commit()
+
+        return jsonify(server.cables_mb)
 
 @app.route('/app/add_raid_card/<int:server_id>/', methods=['GET', 'POST'])
 def add_raid_card(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
+        server.raid_card = True
         db.session.add(server)
-        db.session.add(result)
         db.session.commit()
 
-        return jsonify(server.id)
+        return jsonify(server.raid_card)
 
 @app.route('/app/add_disk_basket/<int:server_id>/', methods=['GET', 'POST'])
 def add_disk_basket(server_id):

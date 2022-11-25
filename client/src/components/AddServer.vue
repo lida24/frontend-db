@@ -4,34 +4,46 @@
             Этапы сборки
         </h4>
         <h5 class="h4 mb-3 font-weight-normal step-title">0 этап</h5>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleCables">
             <div class="title">
                 Монтаж кабелей/кабельных сборок/стяжек/метизов
             </div>
-            <button type="submit" class="btn btn-primary add-server">
-                Добавить
-            </button>
+            <span class="is-disabled">
+                <button @click="add_cables()" class="btn btn-primary add-server" :disabled="computedConditionCables">
+                    Добавить
+                </button>
+            </span>
         </div>
         <h5 class="h4 mb-3 font-weight-normal step-title">1 этап</h5>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleFans140">
             <div class="title">
                 Монтаж 3 верхних вентиляторов в корпус
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddFan140', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_fans_140()" class="btn btn-primary add-server" :disabled="computedConditionFans140">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleFanControlBoard">
             <div class="title">
                 Монтаж платы управления вентиляторами
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddFanControlBoard', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_fan_control_board()" class="btn btn-primary add-server" :disabled="computedConditionFanControlBoard">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleCablesFCB">
             <div class="title">
                 Подключение кабелей в плату управления вентиляторами
             </div>
-            <button type="submit" class="btn btn-primary add-server">
-                Добавить
-            </button>
+            <span class="is-disabled">
+                <button @click="add_cables_fcb()" class="btn btn-primary add-server" :disabled="computedConditionCablesFCB">
+                    Добавить
+                </button>
+            </span>
         </div>
         <div class="rectangle" :style="computedStyleFans40">
             <div class="title">
@@ -53,73 +65,85 @@
                 </button>
             </span>
         </div>
-        <div v-for="c in components" :key="c.id">
-            <div v-if="c.ctype == 'power_management_module'" class="rectangle" style="backgroundColor: #22ed4ef2">
-                <div class="title">
-                    Монтаж платы управления питанием
-                </div>
-                <span class="is-disabled" style="cursor: not-allowed">
-                    <a class="btn btn-primary add-server" style="backgroundColor: #636869; borderColor: #636869; color: #fff; opacity: 1;" :aria-disabled="true">Добавить</a>
-                </span>
-            </div>
-        </div> 
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStylePowerManagementModule">
             <div class="title">
                 Монтаж платы управления питанием
             </div>
             <span class="is-disabled">
-                <router-link class="btn btn-primary add-server" :to="{ name: 'AddPowerManagementModule', params: { id: id }}">Добавить</router-link>
+                <button @click="add_power_management_module()" class="btn btn-primary add-server" :disabled="computedConditionPowerManagementModule">
+                    Добавить
+                </button>
             </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleCablesPMM">
             <div class="title">
                 Подключение кабелей в плату управления питанием
             </div>
-            <button type="submit" class="btn btn-primary add-server">
-                Добавить
-            </button>
+            <span class="is-disabled">
+                <button @click="add_cables_pmm()" class="btn btn-primary add-server" :disabled="computedConditionCablesPMM">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleMemoryAndSSD">
             <div class="title">
                 Монтаж модулей памяти и SSD диска в материнскую плату
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddMotherBoard', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_memory_and_ssd()" class="btn btn-primary add-server" :disabled="computedConditionMemoryAndSSD">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleNetworkCard">
             <div class="title">
                 Монтаж сетевой карты в плату «Райзер-2U» и платы «Райзер-2U» в материнскую плату
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddRaiser2UBoard', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_network_card()" class="btn btn-primary add-server" :disabled="computedConditionNetworkCard">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleRaiser2UBoard">
             <div class="title">
                 Установка батарейки в плату «Райзер-2U»
             </div>
-            <button type="submit" class="btn btn-primary add-server">
-                Добавить
-            </button>
+            <span class="is-disabled">
+                <button @click="add_raiser_2U_board()" class="btn btn-primary add-server" :disabled="computedConditionRaiser2UBoard">
+                    Добавить
+                </button>
+            </span>
         </div>
         <div class="rectangle">
             <div class="title">
                 Монтаж материнской платы в корпус
             </div>
-            <button type="submit" class="btn btn-primary add-server">
-                Добавить
-            </button>
+            <span class="is-disabled">
+                <button class="btn btn-primary add-server">
+                    <router-link :to="{ name: 'AddMotherBoard', params: { id: this.id }}">Добавить</router-link>
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleRaidCard">
             <div class="title">
                 Монтаж RAID-контроллера в плату «Райзер-1U» и платы «Райзер-1U» в материнскую плату
             </div>
-            <router-link class="btn btn-primary add-server" :to="{ name: 'AddRaiser1UBoard', params: { id: n }}">Добавить</router-link>
+            <span class="is-disabled">
+                <button @click="add_raid_card()" class="btn btn-primary add-server" :disabled="computedConditionRaidCard">
+                    Добавить
+                </button>
+            </span>
         </div>
-        <div class="rectangle">
+        <div class="rectangle" :style="computedStyleCablesMB">
             <div class="title">
                 Подключение всех кабелей в материнскую плату и карты расширения
             </div>
-            <button type="submit" class="btn btn-primary add-server">
-                Добавить
-            </button>
+            <span class="is-disabled">
+                <button @click="add_cables_mb()" class="btn btn-primary add-server" :disabled="computedConditionCablesMB">
+                    Добавить
+                </button>
+            </span>
         </div>
         <h5 class="h4 mb-3 font-weight-normal step-title">2 этап</h5>
         <div class="rectangle">
@@ -209,9 +233,17 @@
           /* components: [], */
           indicator_board: '',
           fans_40: '',
-          formData : {
-            indicator_board: '',
-          }
+          cables: '',
+          fans_140: '',
+          fan_control_board: '',
+          power_management_module: '',
+          cables_pmm: '',
+          cables_fcb: '',
+          memory_and_ssd: '',
+          network_card: '',
+          raiser_2U_board: '',
+          raid_card: '',
+          cables_mb: '',
         };
       },
       props: {
@@ -235,7 +267,7 @@
       methods: {
         add_indicator_board() {
         axios
-          .post(`http://192.168.75.11:5000/app/add_indicator_board/${this.id}/`, this.formData)
+          .post(`http://192.168.75.11:5000/app/add_indicator_board/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.indicator_board = response.data;
@@ -255,7 +287,7 @@
         },
         add_fans_40() {
         axios
-          .post(`http://192.168.75.11:5000/app/add_fan40/${this.id}/`, this.formData)
+          .post(`http://192.168.75.11:5000/app/add_fan40/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fans_40 = response.data;
@@ -273,23 +305,245 @@
             console.log(error);
           });
         },
+        add_cables() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_cables/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables = response.data.cables;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_fans_140() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_fan140/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.fans_140 = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.fans_140 = response.data.fans_140;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_fan_control_board() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_fan_control_board/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.fan_control_board = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.fan_control_board = response.data.fan_control_board;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_power_management_module() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_power_management_module/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.power_management_module = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.power_management_module = response.data.power_management_module;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_cables_pmm() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_cables_pmm/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables_pmm = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables_pmm = response.data.cables_pmm;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_cables_fcb() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_cables_fcb/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables_fcb = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables_fcb = response.data.cables_fcb;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_memory_and_ssd() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_memory_and_ssd/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.memory_and_ssd = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.memory_and_ssd = response.data.memory_and_ssd;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_network_card() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_network_card/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.network_card = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.network_card = response.data.network_card;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_raiser_2U_board() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_raiser_2U_board/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.raiser_2U_board = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.raiser_2U_board = response.data.raiser_2U_board;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_raid_card() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_raid_card/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.raid_card = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.raid_card = response.data.raid_card;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
+        add_cables_mb() {
+        axios
+          .post(`http://192.168.75.11:5000/app/add_cables_mb/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables_mb = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        axios
+          .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.cables_mb = response.data.cables_mb;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        },
       }, 
       created() {
         axios
           .get(`http://192.168.75.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
-            /* this.components = response.data; */
-            /* this.n = response.data; */
-            /* console.log("Components: ",this.components); */
             this.indicator_board = response.data.indicator_board;
             this.fans_40 = response.data.fans_40;
+            this.cables = response.data.cables;
+            this.fans_140 = response.data.fans_140;
+            this.fan_control_board = response.data.fan_control_board;
+            this.power_management_module = response.data.power_management_module;
+            this.cables_pmm = response.data.cables_pmm;
+            this.cables_fcb = response.data.cables_fcb;
+            this.memory_and_ssd = response.data.memory_and_ssd;
+            this.network_card = response.data.network_card;
+            this.raiser_2U_board = response.data.raiser_2U_board;
+            this.raid_card = response.data.raid_card;
+            this.cables_mb = response.data.cables_mb;
             console.log(response);
-            /* console.log(this.id);
-            console.log("AddServer: ", this.success); */
-            /* console.log(this.formData.indicator_board);
-            console.log(this.formData.length);
-            console.log(!this.formData.indicator_board && this.formData.indicator_board.length > 0);
-            console.log(this.formData.indicator_board && this.formData.indicator_board.length > 0); */
            /*  if (this.stat == 'установлен в изделие') {
                 console.log("SUCCESS");
                 
@@ -338,7 +592,139 @@
                 return {backgroundColor : '#22ed4ef2'};
             }
             return {backgroundColor : '#343a40'};
-        }
+        },
+        computedConditionCables() {
+            if (this.cables) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleCables() {
+            if (this.cables) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionFans140() {
+            if (this.fans_140) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleFans140() {
+            if (this.fans_140) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionFanControlBoard() {
+            if (this.fan_control_board) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleFanControlBoard() {
+            if (this.fan_control_board) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionPowerManagementModule() {
+            if (this.power_management_module) {
+                return true;
+            }
+            return false;
+        },
+        computedStylePowerManagementModule() {
+            if (this.power_management_module) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionCablesPMM() {
+            if (this.cables_pmm) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleCablesPMM() {
+            if (this.cables_pmm) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionCablesFCB() {
+            if (this.cables_fcb) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleCablesFCB() {
+            if (this.cables_fcb) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionMemoryAndSSD() {
+            if (this.memory_and_ssd) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleMemoryAndSSD() {
+            if (this.memory_and_ssd) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionNetworkCard() {
+            if (this.network_card) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleNetworkCard() {
+            if (this.network_card) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionRaiser2UBoard() {
+            if (this.raiser_2U_board) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleRaiser2UBoard() {
+            if (this.raiser_2U_board) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionRaidCard() {
+            if (this.raid_card) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleRaidCard() {
+            if (this.raid_card) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
+        computedConditionCablesMB() {
+            if (this.cables_mb) {
+                return true;
+            }
+            return false;
+        },
+        computedStyleCablesMB() {
+            if (this.cables_mb) {
+                return {backgroundColor : '#22ed4ef2'};
+            }
+            return {backgroundColor : '#343a40'};
+        },
       },
     };
 </script>

@@ -49,7 +49,7 @@ export default {
         .post(`http://192.168.75.11:5000/app/add_motherboard/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          this.$router.push({ name: "AddDDR4MemoryModule", params: { id: response.data } });
+          this.$router.push({ name: "AddServer", params: { id: this.id} });
         })
         .catch((error) => {
           console.log(error, error.response);

@@ -21,7 +21,8 @@
                 <td>{{ server.tstres }}</td>
                 <td>{{ server.sstat }}</td>
                 <td>
-                    <a class="btn btn-outline btn-info" href="#">Просмотреть</a>
+                    <router-link class="btn btn-outline btn-info" :to="{ name: 'CurrentServer', params: { id: server.id } }">Просмотреть</router-link>
+                    <router-link class="btn btn-outline btn-info" :to="{ name: 'AddServer', params: { id: server.id } }">К сборке</router-link>
                 </td>
         </tbody>
     </table>
@@ -30,30 +31,27 @@
 
 <script>
     import axios from "axios";
+import router from "../router";
     
     export default {
-      data() {
+    data() {
         return {
-          servers: [],
+            servers: [],
         };
-      },
-    
-      created() {
+    },
+    created() {
         axios
-          .get("http://192.168.75.11:5000/app/server_list")
-          .then((response) => {
+            .get("http://127.0.0.1:5000/app/server_list")
+            .then((response) => {
             console.log(response);
             this.servers = response.data;
-            /* for (let i = 0; i < this.servers.length; i++) {
-              this.servers[i] = this.servers[i].__ob__.dep.id;
-              console.log(this.servers[i]);
-            } */
             console.log("Servers: ", this.servers);
             console.log(response);
-          })
-          .catch((error) => {
+        })
+            .catch((error) => {
             console.log(error);
-          });
-      },
-    };
+        });
+    },
+    components: { router }
+};
 </script>

@@ -47,6 +47,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(length=30), nullable=False, unique=True)
     password_hash = db.Column(db.String(length=60), nullable=False)
     components = db.relationship('Components', backref='user_components', lazy=True)
+    servers = db.relationship('Servers', backref='user_servers', lazy=True)
 
     @property
     def password(self):
@@ -79,7 +80,7 @@ class Components(db.Model):
     statts = db.Column(db.DateTime(), nullable=False)
     tests = db.Column(db.String(length=150), default='Отсутствует')
     rem = db.Column(db.String(length=1024), default='Отсутствует')
-    owner = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    owner = db.Column(db.String(length=180), db.ForeignKey('user.username'))
     conclusion = db.Column(db.String(length=1024), nullable=False, default='-')
     server_id = db.Column(db.Integer(), db.ForeignKey('servers.id'))
 
@@ -128,10 +129,10 @@ comptypes_schema = ComptypeSchema(many=True)
 
 class Servers(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    qrcode = db.Column(db.String(length=180))
+    qrcode = db.Column(db.String(length=180), nullable=False, unique=True)
     asts = db.Column(db.DateTime, nullable=False, default=datetime.date)
     vts = db.Column(db.DateTime, default=datetime.date)
-    """ aid = db.Column(db.Integer(), db.ForeignKey('plant.id')) """
+    aid = db.Column(db.String(length=180), db.ForeignKey('user.username'))
     """ vid = db.Column(db.Integer(), primary_key=True) """
     cmps = db.relationship('Components', backref='components')
     """ tstts = db.Column(db.DateTime, default=datetime.utcnow) """
@@ -159,10 +160,11 @@ class Servers(db.Model):
     disk_basket1 = db.Column(db.Boolean(), unique=False, default=False)
 
 
-    def __init__(self, qrcode, asts, vts, cmps, sstat, indicator_board, fans_40, cables, fans_140, fan_control_board, power_management_module, cables_pmm, cables_fcb, memory_and_ssd, network_card, raiser_2U_board, raid_card, cables_mb, motherboard, power_supply_2k6, disk_basket4, disk_basket3, disk_basket2, disk_basket1):
+    def __init__(self, qrcode, asts, vts, aid, cmps, sstat, indicator_board, fans_40, cables, fans_140, fan_control_board, power_management_module, cables_pmm, cables_fcb, memory_and_ssd, network_card, raiser_2U_board, raid_card, cables_mb, motherboard, power_supply_2k6, disk_basket4, disk_basket3, disk_basket2, disk_basket1):
         self.qrcode = qrcode
         self.asts = asts
         self.vts = vts
+        self.aid = aid
         self.cmps = cmps
         self.sstat = sstat
         self.indicator_board = indicator_board
@@ -188,7 +190,7 @@ class Servers(db.Model):
 # schema
 class ServerSchema(ma.SQLAlchemySchema):
     class  Meta:
-        fields = ("id", "qrcode", "asts", "vts", "sstat", "indicator_board", "fans_40", "cables", "fans_140", "fan_control_board", "power_management_module", "cables_pmm", "cables_fcb", "memory_and_ssd", "network_card", "raiser_2U_board", "raid_card", "cables_mb", "motherboard", "power_supply_2k6", "disk_basket4", "disk_basket3", "disk_basket2", "disk_basket1")
+        fields = ("id", "qrcode", "asts", "vts", "aid", "sstat", "indicator_board", "fans_40", "cables", "fans_140", "fan_control_board", "power_management_module", "cables_pmm", "cables_fcb", "memory_and_ssd", "network_card", "raiser_2U_board", "raid_card", "cables_mb", "motherboard", "power_supply_2k6", "disk_basket4", "disk_basket3", "disk_basket2", "disk_basket1")
 
 # schema obj
 server_schema = ServerSchema() 
@@ -236,15 +238,26 @@ def current_component(id):
     else:
         return "No component with that ID"
 
+@app.route('/app/current_server/<id>/', methods=['GET'])
+def current_server(id):
+
+    current_server = Servers.query.filter_by(id=id).first()
+    if current_server:
+        return server_schema.jsonify(current_server)
+    else:
+        return "No server with that ID"
+
 #  ------------------ post or add new 
 @app.route('/app/create_component/<username>/', methods=['GET', 'POST'])
 def add_component(username):
-    print("USERNAME: ", username)
     ctype = request.json['ctype']
     qrcode = request.json['qrcode']
     errors = ""
     if qrcode == "":
         errors = '500'
+        return errors
+    if ctype == "":
+        errors = '510'
         return errors
     result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
     if result != None:
@@ -256,7 +269,7 @@ def add_component(username):
     statts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     tests = 'Отсутствует'
     rem = 'Отсутствует'
-    owner = user.id
+    owner = user.username
     conclusion = '-'
 
     components = Components(ctype, qrcode, addts, cstat, statts, tests, rem, owner, conclusion)
@@ -270,12 +283,31 @@ def add_component(username):
 
     return component_schema.jsonify(components)
 
-@app.route('/app/add_chassis', methods=['GET', 'POST'])
-def add_chassis():
+@app.route('/app/add_chassis/<username>/', methods=['GET', 'POST'])
+def add_chassis(username):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
-        server_to_create = Servers(qrcode=result.qrcode,
+        if request.json['qrcode'] == '':
+                errors = '520'
+                return jsonify({'error': errors, 'other': ''})
+        if result == None:
+                errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if result.cstat == 'забракован':
+                errors = '505'
+                return jsonify({'error': errors, 'other': ''})
+        """ if result.cstat == 'новый':
+                errors = '510'
+                return jsonify({'error': errors, 'other': ''}) """
+        if result.cstat == 'установлен в изделие':
+                errors = '515'
+                server = Servers.query.filter_by(id=result.server_id).first()
+                qr = server.qrcode
+                return jsonify({'error': errors, 'other': qr})
+        user = User.query.filter_by(username=username).first()
+        server_to_create = Servers(qrcode=request.json['qrcode'],
                                    asts=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                    vts =datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                   aid=user.username,
                                    sstat='новый',
                                    cmps=[result],
                                    cables=False,
@@ -298,24 +330,18 @@ def add_chassis():
                                    disk_basket2=False,
                                    disk_basket1=False,
                                   )
-        server_to_create.cstat = 'установлен в изделие'
+        server_to_create.sstat = 'в сборке'
         result.cstat = 'установлен в изделие'
         db.session.add(server_to_create)
         db.session.add(result)
         db.session.commit()
 
-        return jsonify(server_to_create.id)
+        return jsonify({'error': '', 'other': server_to_create.id})
 
 
 @app.route('/app/get_chassis/<int:server_id>/', methods=['GET', 'POST'])
 def get_chassis(server_id):
-        """ cmps_list = [] """
         server = Servers.query.filter_by(id=server_id).first()
-        """ data = [{'id': cmps.id, 'ctype': cmps.ctype, 'conclusion': cmps.conclusion, 'qrcode': cmps.qrcode, 'cstat': cmps.cstat, 'addts': cmps.addts, 'statts': cmps.statts, 'tests': cmps.tests, 'rem': cmps.rem} for cmps in server.cmps] """
-        """ for cmps in server.cmps:
-            cmps_list += [cmps]    
-        print(cmps_list) """
-        """ print(data) """
         return server_schema.jsonify(server)
 
 @app.route('/app/add_cables/<int:server_id>/', methods=['GET', 'POST'])
@@ -365,12 +391,9 @@ def add_fan40(server_id):
 
 @app.route('/app/add_indicator_board/<int:server_id>/', methods=['GET', 'POST'])
 def add_indicator_board(server_id):
-        """ result = Components.query.filter_by(qrcode=request.json['qrcode']).first() """
         server = Servers.query.filter_by(id=server_id).first()
         server.indicator_board = True
-        """ result.cstat = 'установлен в изделие' """
         db.session.add(server)
-        """ db.session.add(result) """
         db.session.commit()
 
         return jsonify(server.indicator_board)
@@ -406,6 +429,26 @@ def add_memory_and_ssd(server_id):
 def add_motherboard(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
+        if request.json['qrcode'] == '':
+                errors = '520'
+                return jsonify({'error': errors, 'other': ''})
+        if result == None:
+                errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if server.motherboard == True:
+                errors = '530'
+                return jsonify({'error': errors, 'other': ''})
+        if result.cstat == 'забракован':
+                errors = '505'
+                return jsonify({'error': errors, 'other': ''})
+        """ if result.cstat == 'новый':
+                errors = '510'
+                return jsonify({'error': errors, 'other': ''}) """
+        if result.cstat == 'установлен в изделие':
+                errors = '515'
+                server = Servers.query.filter_by(id=result.server_id).first()
+                qr = server.qrcode
+                return jsonify({'error': errors, 'other': qr})
         server.cmps += [result]
         server.motherboard = True
         result.cstat = 'установлен в изделие'
@@ -415,30 +458,6 @@ def add_motherboard(server_id):
         db.session.commit()
 
         return jsonify(server.motherboard)    
-
-@app.route('/app/add_ddr4_memory_module/<int:server_id>/', methods=['GET', 'POST'])
-def add_ddr4_memory_module(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
-        server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
-        db.session.add(server)
-        db.session.add(result)
-        db.session.commit()
-
-        return jsonify(server.id)
-
-@app.route('/app/add_m2_ssd/<int:server_id>/', methods=['GET', 'POST'])
-def add_m2_ssd(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
-        server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
-        db.session.add(server)
-        db.session.add(result)
-        db.session.commit()
-
-        return jsonify(server.id)
 
 @app.route('/app/add_raiser_2U_board/<int:server_id>/', methods=['GET', 'POST'])
 def add_raiser_2U_board(server_id):
@@ -457,18 +476,6 @@ def add_network_card(server_id):
         db.session.commit()
 
         return jsonify(server.network_card)
-
-@app.route('/app/add_raiser_1U_board/<int:server_id>/', methods=['GET', 'POST'])
-def add_raiser_1U_board(server_id):
-        result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
-        server = Servers.query.filter_by(id=server_id).first()
-        server.cmps += [result]
-        result.cstat = 'установлен в изделие'
-        db.session.add(server)
-        db.session.add(result)
-        db.session.commit()
-
-        return jsonify(server.id)
 
 @app.route('/app/add_cables_mb/<int:server_id>/', methods=['GET', 'POST'])
 def add_cables_mb(server_id):
@@ -492,6 +499,29 @@ def add_raid_card(server_id):
 def add_disk_basket4(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
+        if request.json['qrcode'] == '':
+                errors = '520'
+                return jsonify({'error': errors, 'other': ''})
+        if result == None:
+                errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if server.disk_basket4 == True:
+                errors = '530'
+                return jsonify({'error': errors, 'other': ''})
+        if result.cstat == 'забракован':
+                errors = '505'
+                return jsonify({'error': errors, 'other': ''})
+        """ if result.cstat == 'новый':
+                errors = '510'
+                return jsonify({'error': errors, 'other': ''}) """
+        if result.cstat == 'установлен в изделие':
+                if result.server_id == server.id:
+                        errors = '525'
+                        return jsonify({'error': errors, 'other': ''})
+                errors = '515'
+                server = Servers.query.filter_by(id=result.server_id).first()
+                qr = server.qrcode
+                return jsonify({'error': errors, 'other': qr})
         server.disk_basket4 = True
         server.cmps += [result]
         result.cstat = 'установлен в изделие'
@@ -506,6 +536,29 @@ def add_disk_basket4(server_id):
 def add_disk_basket3(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
+        if request.json['qrcode'] == '':
+                errors = '520'
+                return jsonify({'error': errors, 'other': ''})
+        if result == None:
+                errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if server.disk_basket3 == True:
+                errors = '530'
+                return jsonify({'error': errors, 'other': ''})
+        if result.cstat == 'забракован':
+                errors = '505'
+                return jsonify({'error': errors, 'other': ''})
+        """ if result.cstat == 'новый':
+                errors = '510'
+                return jsonify({'error': errors, 'other': ''}) """
+        if result.cstat == 'установлен в изделие':
+                if result.server_id == server.id:
+                        errors = '525'
+                        return jsonify({'error': errors, 'other': ''})
+                errors = '515'
+                server = Servers.query.filter_by(id=result.server_id).first()
+                qr = server.qrcode
+                return jsonify({'error': errors, 'other': qr})
         server.disk_basket3 = True
         server.cmps += [result]
         result.cstat = 'установлен в изделие'
@@ -520,6 +573,29 @@ def add_disk_basket3(server_id):
 def add_disk_basket2(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
+        if request.json['qrcode'] == '':
+                errors = '520'
+                return jsonify({'error': errors, 'other': ''})
+        if result == None:
+                errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if server.disk_basket2 == True:
+                errors = '530'
+                return jsonify({'error': errors, 'other': ''})
+        if result.cstat == 'забракован':
+                errors = '505'
+                return jsonify({'error': errors, 'other': ''})
+        """ if result.cstat == 'новый':
+                errors = '510'
+                return jsonify({'error': errors, 'other': ''}) """
+        if result.cstat == 'установлен в изделие':
+                if result.server_id == server.id:
+                        errors = '525'
+                        return jsonify({'error': errors, 'other': ''})
+                errors = '515'
+                server = Servers.query.filter_by(id=result.server_id).first()
+                qr = server.qrcode
+                return jsonify({'error': errors, 'other': qr})
         server.disk_basket2 = True
         server.cmps += [result]
         result.cstat = 'установлен в изделие'
@@ -534,6 +610,29 @@ def add_disk_basket2(server_id):
 def add_disk_basket1(server_id):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
         server = Servers.query.filter_by(id=server_id).first()
+        if request.json['qrcode'] == '':
+                errors = '520'
+                return jsonify({'error': errors, 'other': ''})
+        if result == None:
+                errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if server.disk_basket1 == True:
+                errors = '530'
+                return jsonify({'error': errors, 'other': ''})
+        if result.cstat == 'забракован':
+                errors = '505'
+                return jsonify({'error': errors, 'other': ''})
+        """ if result.cstat == 'новый':
+                errors = '510'
+                return jsonify({'error': errors, 'other': ''}) """
+        if result.cstat == 'установлен в изделие':
+                if result.server_id == server.id:
+                        errors = '525'
+                        return jsonify({'error': errors, 'other': ''})
+                errors = '515'
+                server = Servers.query.filter_by(id=result.server_id).first()
+                qr = server.qrcode
+                return jsonify({'error': errors, 'other': qr})
         server.disk_basket1 = True
         server.cmps += [result]
         result.cstat = 'установлен в изделие'
@@ -705,4 +804,4 @@ def handle_testing(id):
     return jsonify(conclusion)
 
 if __name__ == '__main__':
-    app.run(host='192.168.75.11', port=5000)
+    app.run(host='127.0.0.1', port=5000)

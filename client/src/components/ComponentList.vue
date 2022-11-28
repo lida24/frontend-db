@@ -9,7 +9,7 @@
                     <th scope="col">Опции</th>
                 </tr>
             </thead>
-            <tbody v-for="component in components" :key="component.id">
+            <tbody v-for="component in components" :key="component.id" v-if="component.count != 0">
                     <td>{{ component.decoding }}</td>
                     <td>{{ component.count }}</td>
                     <td>
@@ -32,7 +32,7 @@
     
       created() {
         axios
-          .get("http://192.168.75.11:5000/app/component_list")
+          .get("http://127.0.0.1:5000/app/component_list")
           .then((response) => {
             this.components = response.data;
             console.log("Components: ",this.components);

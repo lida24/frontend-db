@@ -1,5 +1,8 @@
 <template>
   <div class="register">
+      <div v-if="showError" class="alert alert-info">
+        Пользователь с таким именем уже существует!
+      </div>
       <div class="container form">
       <br />
       <form @submit.prevent="submit">
@@ -30,7 +33,6 @@
           <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
       </form>
     </div>
-    <p v-if="showError" id="error">Username already exists</p>
   </div>
 </template>
 
@@ -52,7 +54,7 @@ export default {
     async submit() {
       try {
         await this.Register(this.form);
-        this.$router.push("/select_action");
+        this.$router.push("/login");
         this.showError = false
       } catch (error) {
         console.log(error)
@@ -62,8 +64,3 @@ export default {
   },
 };
 </script>
-<style>
-#error {
-  color: red;
-}
-</style>

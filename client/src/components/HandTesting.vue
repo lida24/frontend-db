@@ -42,7 +42,7 @@ export default {
  methods: {
     setConclusion() {
         axios
-        .post(`http://192.168.75.11:5000/app/hand_testing/${this.id}/`, this.form)
+        .post(`http://127.0.0.1:5000/app/hand_testing/${this.id}/`, this.form)
         .then((response) => {
           console.log(response);
           this.$router.push({ name: 'CurrentComponent', params: { id: this.id } });

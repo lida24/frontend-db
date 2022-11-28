@@ -1,33 +1,21 @@
 import Vue from 'vue';
 import Router from "vue-router";
 import CreateComponent from "@/components/CreateComponent";
-import Home from "@/components/Home";
 import SelectAction from "@/components/SelectAction";
 import ComponentList from "@/components/ComponentList";
 import ComponentDetail from "@/components/ComponentDetail";
 import ServerList from "@/components/ServerList";
 import AddChassis from "@/components/AddChassis";
-import AddFan140 from "@/components/AddFan140";
-import AddFanControlBoard from "@/components/AddFanControlBoard";
-import AddFan40 from "@/components/AddFan40";
-import AddIndicatorBoard from "@/components/AddIndicatorBoard";
-import AddPowerManagementModule from "@/components/AddPowerManagementModule";
 import AddMotherBoard from "@/components/AddMotherBoard";
-import AddDDR4MemoryModule from "@/components/AddDDR4MemoryModule";
-import AddM2SSD from "@/components/AddM2SSD";
-import AddRaiser2UBoard from "@/components/AddRaiser2UBoard";
-import AddNetworkCard from "@/components/AddNetworkCard";
-import AddRaiser1UBoard from "@/components/AddRaiser1UBoard";
-import AddRaidCard from "@/components/AddRaidCard";
 import AddDiskBasket4 from "@/components/AddDiskBasket4";
 import AddDiskBasket3 from "@/components/AddDiskBasket3";
 import AddDiskBasket2 from "@/components/AddDiskBasket2";
 import AddDiskBasket1 from "@/components/AddDiskBasket1";
-import AddPowerSupply2K6 from "@/components/AddPowerSupply2K6";
 import AddServer from "@/components/AddServer";
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import CurrentComponent from "@/components/CurrentComponent";
+import CurrentServer from "@/components/CurrentServer";
 import HandTesting from "@/components/HandTesting";
 import { store } from "../store";
 
@@ -57,11 +45,6 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/select_action',
     name: 'SelectAction',
     component: SelectAction,
     meta: { requiresAuth: true },
@@ -93,43 +76,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/add_chassis/:id',
+    path: '/add_chassis/:username',
     name: 'AddChassis',
     component: AddChassis,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_fan140/:id',
-    name: 'AddFan140',
-    component: AddFan140,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_fan_control_board/:id',
-    name: 'AddFanControlBoard',
-    component: AddFanControlBoard,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_fan40/:id',
-    name: 'AddFan40',
-    component: AddFan40,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_indicator_board/:id',
-    name: 'AddIndicatorBoard',
-    component: AddIndicatorBoard,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_power_management_module/:id',
-    name: 'AddPowerManagementModule',
-    component: AddPowerManagementModule,
     props: true,
     meta: { requiresAuth: true },
   },
@@ -137,48 +86,6 @@ const routes = [
     path: '/add_motherboard/:id',
     name: 'AddMotherBoard',
     component: AddMotherBoard,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_ddr4_memory_module/:id',
-    name: 'AddDDR4MemoryModule',
-    component: AddDDR4MemoryModule,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_m2_ssd/:id',
-    name: 'AddM2SSD',
-    component: AddM2SSD,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_raiser_2U_board/:id',
-    name: 'AddRaiser2UBoard',
-    component: AddRaiser2UBoard,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_network_card/:id',
-    name: 'AddNetworkCard',
-    component: AddNetworkCard,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_raiser_1U_board/:id',
-    name: 'AddRaiser1UBoard',
-    component: AddRaiser1UBoard,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/add_raid_card/:id',
-    name: 'AddRaidCard',
-    component: AddRaidCard,
     props: true,
     meta: { requiresAuth: true },
   },
@@ -211,16 +118,16 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/add_power_supply_2k6/:id',
-    name: 'AddPowerSupply2K6',
-    component: AddPowerSupply2K6,
+    path: '/add_server/:id',
+    name: 'AddServer',
+    component: AddServer,
     props: true,
     meta: { requiresAuth: true },
   },
   {
-    path: '/add_server/:id',
-    name: 'AddServer',
-    component: AddServer,
+    path: '/current_server/:id',
+    name: 'CurrentServer',
+    component: CurrentServer,
     props: true,
     meta: { requiresAuth: true },
   },

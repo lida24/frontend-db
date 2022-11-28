@@ -9,7 +9,7 @@
                 <router-link class="btn btn-primary component-btn" :to="{ name: 'ComponentList' }">Просмотреть все компоненты</router-link>
             </div>
             <div class="servers-btn">
-                <router-link class="btn btn-primary server-btn" :to="{ name: 'AddChassis' }">Собрать сервер</router-link>
+                <router-link class="btn btn-primary server-btn" :to="{ name: 'AddChassis', params: { username: User }}">Собрать сервер</router-link>
                 <!-- <router-link class="btn btn-primary server-btn" :to="{ name: 'AddServer' }">Собрать сервер</router-link> -->
                 <router-link class="btn btn-primary server-btn" :to="{ name: 'ServerList' }">Просмотреть все серверы</router-link>
             </div>

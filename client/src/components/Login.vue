@@ -58,7 +58,7 @@ export default {
       User.append("password", this.form.password);
       try {
           await this.LogIn(this.form);
-          this.$router.push("/select_action");
+          this.$router.push("/");
           this.showError = false
       } catch (error) {
         console.log(error)

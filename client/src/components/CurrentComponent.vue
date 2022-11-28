@@ -15,7 +15,7 @@
           <tr><td>Ссылка на результаты теста</td><td><a class="btn btn-outline btn-info disabled" href="#">{{ this.component.tests }}</a></td></tr>
           <tr><td>Комментарий</td><td>{{ this.component.rem }}</td></tr>
           <tr v-if="component.ctype_name == 'indicator_board' || component.ctype_name == 'fan_control_board'"><td>Опции</td><td><router-link class="link" :to="{ name: 'HandTesting', params: { id: this.component.id } }"><button class="btn btn-outline btn-info" :disabled="computedCondition" :to="{ name: 'HandTesting', params: { id: this.component.id } }">Протестировать</button></router-link></td></tr>
-          <tr v-else><td>Опции</td><td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td></tr> 
+          <tr v-else><td>Опции</td><td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedCondition">Протестировать</button></td><td><button class="btn btn-outline btn-info" @click="testing()" :disabled="computedConditionConclusion">Протестировать повторно</button></td></tr> 
       </table>
     </div>
   </template>
@@ -38,7 +38,7 @@ export default {
     //   get component
     componentDetail() {
       axios
-        .get(`http://192.168.75.11:5000/app/current_component/${this.id}/`)
+        .get(`http://127.0.0.1:5000/app/current_component/${this.id}/`)
         .then((response) => {
           this.component = response.data;
           console.log(response.data);
@@ -49,7 +49,7 @@ export default {
     },
     testing() {
       axios
-        .get(`http://192.168.75.11:5000/app/testing/${this.component.id}/`)
+        .get(`http://127.0.0.1:5000/app/testing/${this.component.id}/`)
         .then((response) => {
           console.log(response);
         })
@@ -57,7 +57,7 @@ export default {
           console.log(error, error.response);
         });
         setInterval(() => { axios
-            .get(`http://192.168.75.11:5000/app/getstatus/${this.component.id}/`)
+            .get(`http://127.0.0.1:5000/app/getstatus/${this.component.id}/`)
             .then((response) => {
               console.log(response.data);
               if (response.data.status == null) {
@@ -91,7 +91,15 @@ export default {
       else {
         return false;
       } 
-    }
+    },
+    computedConditionConclusion() {
+      if (this.component.conclusion == 'нe годен') {
+        return false;
+      }
+      else {
+        return true;
+      } 
+    },
    },
   created() {
       this.componentDetail();

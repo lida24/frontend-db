@@ -2,9 +2,6 @@
   <div class="wrap">
     <p v-if="logs.length">
       <div class="alert alert-info">
-        <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
         {{ log }}
       </div>
     </p>
@@ -23,7 +20,7 @@
      <h4 class="h3 mb-3 font-weight-normal">
                 Выберите тип компонента
      </h4>
-     <!-- <br />
+     <br />
         <div class="btn btn-info">Корпус<input type="radio" value="chassis" class="btn btn-info radio" v-model="form.ctype"/></div>
         <div class="btn btn-info">Материнская плата<input type="radio" value="motherboard" class="btn btn-info radio" v-model="form.ctype"/></div>
         <div class="btn btn-info">Модуль объединительный<input type="radio" value="hdd_backplane" class="btn btn-info radio" v-model="form.ctype"/></div>
@@ -32,15 +29,7 @@
       <br />
       <br />
       <br />
-      <br /> -->
-      <select class="form-control" v-model="form.ctype">
-        <option disabled value="">Выберите тип компонента</option>
-        <option v-for="ctype in ctypes">{{ ctype }}</option>
-      </select>
-      <h4 class="h3 mb-3 font-weight-normal">
-                Введите QR-код
-     </h4>
-     <br />
+      <br />
       <input
         type="text"
         placeholder="QR-код"
@@ -82,7 +71,7 @@ export default {
         this.form.errors.push('Product name is required.');
       } else {
         axios
-        .post(`http://192.168.75.11:5000/app/create_component/${this.username}/`, this.form)
+        .post(`http://127.0.0.1:5000/app/create_component/${this.username}/`, this.form)
         .then((response) => {
           if (response.data == '500') {
             this.logs = response.data;
@@ -93,6 +82,12 @@ export default {
           else if (response.data == '505') {
             this.logs = response.data;
             this.log = "Компонент с таким qr-code уже существует!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data == '510') {
+            this.logs = response.data;
+            this.log = "Выберите тип компонента!"
             alert = document.getElementsByClassName('alert');
             alert[0].style.display = 'block';
           }

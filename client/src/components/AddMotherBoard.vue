@@ -1,4 +1,8 @@
 <template>
+  <div class="wrap">
+    <div class="alert alert-info">
+        {{ log }}
+    </div>
     <div class="container form">
     <br />
     <form method="post" @submit.prevent="addComponent">
@@ -25,6 +29,7 @@
     </button>
     </form>
     </div>
+  </div>
 </template>
 
 <script>
@@ -35,6 +40,8 @@ export default {
       formData: {
         qrcode: ""
       },
+      logs: [],
+      log: []
     };
   },
   props: {
@@ -46,10 +53,52 @@ export default {
   methods: {
     addComponent() {
       axios
-        .post(`http://192.168.75.11:5000/app/add_motherboard/${this.id}/`, this.formData)
+        .post(`http://127.0.0.1:5000/app/add_motherboard/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
-          this.$router.push({ name: "AddServer", params: { id: this.id } });
+          if (response.data.error == '500') {
+            this.logs = response.data.error;
+            this.log = "Компонент не найден в базе!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data.error == '505') {
+            this.logs = response.data.error;
+            this.log = "Компонент числится, как забракованный!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data.error == '510') {
+            this.logs = response.data.error;
+            this.log = "Компонент, который должен был пройти проверку, не помечен, как прошедший!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data.error == '515') {
+            this.logs = response.data.error;
+            this.log = "Компонент уже числится в составе другого сервера c QR-кодом: " + response.data.other;
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data.error == '520') {
+            this.logs = response.data.error;
+            this.log = "Введите qr-code компонента!";
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data.error == '530') {
+            this.logs = response.data.error;
+            this.log = "Компонент данного типа уже установлен в нужном количестве (лишнее сканирование)!";
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else {
+            this.logs = response.data.other;
+            this.log = "Компонент успешно добавлен!"
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+            this.$router.push({ name: "AddServer", params: { id: this.id } });
+          }
         })
         .catch((error) => {
           console.log(error, error.response);
@@ -58,3 +107,11 @@ export default {
   },
 };
 </script>
+<style>
+.form {
+  margin-top: 5rem;
+}
+.alert {
+    display: none;
+}
+</style>

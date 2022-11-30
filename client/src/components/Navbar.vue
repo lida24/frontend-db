@@ -46,6 +46,9 @@ export default {
 </script>
 
 <style>
+.nav-item {
+  margin-left: 10px;
+}
 a:hover {
   cursor: pointer;
 }

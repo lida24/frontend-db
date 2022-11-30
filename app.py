@@ -200,11 +200,6 @@ servers_schema = ServerSchema(many=True)
 @app.route('/app/server_list', methods=['GET'])
 def get_servers():
     all_servers = Servers.query.all()
-    print(all_servers)
-    data = []
-    for p in all_servers:
-        data += [{'qrcode': p.qrcode}]
-        print(data)
     return  servers_schema.jsonify(all_servers)
 
 #  ------------------ get all components
@@ -212,42 +207,30 @@ def get_servers():
 def get_components():
     """ all_components = Comptypes.query.all() """
     all_components = [Comptypes.query.filter_by(name='chassis').first(), Comptypes.query.filter_by(name='motherboard').first(), Comptypes.query.filter_by(name='hdd_backplane').first(), Comptypes.query.filter_by(name='raiser_board').first(), Comptypes.query.filter_by(name='power_management_module').first()]
-    print(all_components)
     return  comptypes_schema.jsonify(all_components)
 
+#  ------------------ get all components of one type
 @app.route('/app/component/<id>/', methods=['GET'])
 def component_details(id):
-
     component_detail = Comptypes.query.get(id)
     data = [{'id': p.id, 'decoding': component_detail.decoding, 'conclusion': p.conclusion, 'qrcode': p.qrcode, 'cstat': p.cstat, 'addts': p.addts, 'statts': p.statts, 'tests': p.tests, 'rem': p.rem} for p in component_detail.components]
-    for p in component_detail.components:
-        print(p.addts)
-    if component_detail:
-        return jsonify(data)
-    else:
-        return "No component with that ID"
+    return jsonify(data)
 
+#  ------------------ get current component
 @app.route('/app/current_component/<id>/', methods=['GET'])
 def current_component(id):
-
     current_component = Components.query.filter_by(id=id).first()
     current_comptype = Comptypes.query.filter_by(name=current_component.ctype).first()
     data = {'id': current_component.id, 'conclusion': current_component.conclusion, 'qrcode': current_component.qrcode, 'cstat': current_component.cstat, 'tests': current_component.tests, 'rem': current_component.rem, 'ctype_id': current_comptype.id, 'ctype_name': current_comptype.name, 'decoding': current_comptype.decoding }
-    if current_component:
-        return jsonify(data)
-    else:
-        return "No component with that ID"
+    return jsonify(data)
 
+#  ------------------ get current server
 @app.route('/app/current_server/<id>/', methods=['GET'])
 def current_server(id):
-
     current_server = Servers.query.filter_by(id=id).first()
-    if current_server:
-        return server_schema.jsonify(current_server)
-    else:
-        return "No server with that ID"
+    return server_schema.jsonify(current_server)
 
-#  ------------------ post or add new 
+#  ------------------ create new component
 @app.route('/app/create_component/<username>/', methods=['GET', 'POST'])
 def add_component(username):
     ctype = request.json['ctype']
@@ -283,6 +266,7 @@ def add_component(username):
 
     return component_schema.jsonify(components)
 
+#  ------------------ create new server
 @app.route('/app/add_chassis/<username>/', methods=['GET', 'POST'])
 def add_chassis(username):
         result = Components.query.filter_by(qrcode=request.json['qrcode']).first()
@@ -291,6 +275,9 @@ def add_chassis(username):
                 return jsonify({'error': errors, 'other': ''})
         if result == None:
                 errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if result.ctype != 'chassis':
+                errors = '525'
                 return jsonify({'error': errors, 'other': ''})
         if result.cstat == 'забракован':
                 errors = '505'
@@ -338,10 +325,14 @@ def add_chassis(username):
 
         return jsonify({'error': '', 'other': server_to_create.id})
 
-
+#  ------------------ get chassis
 @app.route('/app/get_chassis/<int:server_id>/', methods=['GET', 'POST'])
 def get_chassis(server_id):
         server = Servers.query.filter_by(id=server_id).first()
+        if (server.indicator_board and server.fans_40 and server.cables and server.fans_140 and server.fan_control_board and server.power_management_module and server.cables_pmm and server.cables_fcb and server.memory_and_ssd and server.network_card and server.raiser_2U_board and server.raid_card and server.cables_mb and server.motherboard and server.power_supply_2k6 and server.disk_basket4 and server.disk_basket3 and server.disk_basket2 and server.disk_basket1):
+                server.sstat = 'собран'
+                db.session.add(server)
+                db.session.commit()
         return server_schema.jsonify(server)
 
 @app.route('/app/add_cables/<int:server_id>/', methods=['GET', 'POST'])
@@ -435,6 +426,9 @@ def add_motherboard(server_id):
         if result == None:
                 errors = '500'
                 return jsonify({'error': errors, 'other': ''})
+        if result.ctype != 'motherboard':
+                errors = '535'
+                return jsonify({'error': errors, 'other': ''})
         if server.motherboard == True:
                 errors = '530'
                 return jsonify({'error': errors, 'other': ''})
@@ -505,6 +499,9 @@ def add_disk_basket4(server_id):
         if result == None:
                 errors = '500'
                 return jsonify({'error': errors, 'other': ''})
+        if result.ctype != 'hdd_backplane':
+                errors = '535'
+                return jsonify({'error': errors, 'other': ''})
         if server.disk_basket4 == True:
                 errors = '530'
                 return jsonify({'error': errors, 'other': ''})
@@ -541,6 +538,9 @@ def add_disk_basket3(server_id):
                 return jsonify({'error': errors, 'other': ''})
         if result == None:
                 errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if result.ctype != 'hdd_backplane':
+                errors = '535'
                 return jsonify({'error': errors, 'other': ''})
         if server.disk_basket3 == True:
                 errors = '530'
@@ -579,6 +579,9 @@ def add_disk_basket2(server_id):
         if result == None:
                 errors = '500'
                 return jsonify({'error': errors, 'other': ''})
+        if result.ctype != 'hdd_backplane':
+                errors = '535'
+                return jsonify({'error': errors, 'other': ''})
         if server.disk_basket2 == True:
                 errors = '530'
                 return jsonify({'error': errors, 'other': ''})
@@ -615,6 +618,9 @@ def add_disk_basket1(server_id):
                 return jsonify({'error': errors, 'other': ''})
         if result == None:
                 errors = '500'
+                return jsonify({'error': errors, 'other': ''})
+        if result.ctype != 'hdd_backplane':
+                errors = '535'
                 return jsonify({'error': errors, 'other': ''})
         if server.disk_basket1 == True:
                 errors = '530'
@@ -706,7 +712,7 @@ def getresults():
         if cstat == 'Error':
             if error == None:
                 error = 'Ошибка'
-            component.cstat = 'протестирован'
+            component.cstat = 'забракован'
             component.conclusion = 'нe годен'
             component.rem = error
             component.statts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -724,7 +730,6 @@ def getstatus(id):
         print("/app/getstatus ", component.cstat)
         cstat = component.cstat
 
-        """ return jsonify(cstat) """
         return jsonify( { 'status' : cstat, 'conclusion': component.conclusion, 'rem': component.rem } )
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -785,11 +790,6 @@ def logout_page():
         "status": "success"
     }), 200
 
-        # sanity check route
-@app.route('/ping', methods=['GET'])
-def ping_pong():
-    return jsonify('pong!')
-
 @app.route('/app/hand_testing/<int:id>/', methods=['POST'])
 def handle_testing(id):
 
@@ -797,11 +797,13 @@ def handle_testing(id):
 
     component = Components.query.filter_by(id=id).first()
     component.conclusion = conclusion
-    component.cstat = 'протестирован'
+    if conclusion == 'годен':
+        component.cstat = 'протестирован'
+    elif conclusion == 'нe годен':
+        component.cstat = 'забракован'
     db.session.add(component)
     db.session.commit()
- 
     return jsonify(conclusion)
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host='185.129.98.66', port=5000)

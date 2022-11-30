@@ -53,7 +53,7 @@ export default {
   methods: {
     addComponent() {
       axios
-        .post(`http://127.0.0.1:5000/app/add_motherboard/${this.id}/`, this.formData)
+        .post(`http://185.129.98.66:5000/app/add_motherboard/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
           if (response.data.error == '500') {
@@ -89,6 +89,12 @@ export default {
           else if (response.data.error == '530') {
             this.logs = response.data.error;
             this.log = "Компонент данного типа уже установлен в нужном количестве (лишнее сканирование)!";
+            alert = document.getElementsByClassName('alert');
+            alert[0].style.display = 'block';
+          }
+          else if (response.data.error == '535') {
+            this.logs = response.data.error;
+            this.log = "Компонент не является материнской платой!";
             alert = document.getElementsByClassName('alert');
             alert[0].style.display = 'block';
           }

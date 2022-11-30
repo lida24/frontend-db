@@ -11,7 +11,7 @@ const getters = {
 
 const actions = {
   async Register({dispatch}, form) {
-    await axios.post('http://127.0.0.1:5000/register', form)
+    await axios.post('http://185.129.98.66:5000/register', form)
     let UserForm = new FormData()
     UserForm.append('username', form.username)
     UserForm.append('password', form.password)
@@ -19,7 +19,7 @@ const actions = {
   },
 
   async LogIn({commit}, form) {
-    await axios.post("http://127.0.0.1:5000/login",
+    await axios.post("http://185.129.98.66:5000/login",
       {
         "username": form.username,
         "password": form.password
@@ -40,7 +40,7 @@ const actions = {
 
 
   async LogOut({ commit }) {
-    await axios.get('http://127.0.0.1:5000/logout')
+    await axios.get('http://185.129.98.66:5000/logout')
     let user = null;
     commit("logout", user);
   },

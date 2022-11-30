@@ -31,7 +31,7 @@
             class="form-control" />
           <br />
           <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-      </form>
+      </form>￼
     </div>
   </div>
 </template>

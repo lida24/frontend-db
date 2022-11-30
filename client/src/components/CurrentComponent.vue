@@ -38,7 +38,7 @@ export default {
     //   get component
     componentDetail() {
       axios
-        .get(`http://127.0.0.1:5000/app/current_component/${this.id}/`)
+        .get(`http://185.129.98.66:5000/app/current_component/${this.id}/`)
         .then((response) => {
           this.component = response.data;
           console.log(response.data);
@@ -49,7 +49,7 @@ export default {
     },
     testing() {
       axios
-        .get(`http://127.0.0.1:5000/app/testing/${this.component.id}/`)
+        .get(`http://185.129.98.66:5000/app/testing/${this.component.id}/`)
         .then((response) => {
           console.log(response);
         })
@@ -57,7 +57,7 @@ export default {
           console.log(error, error.response);
         });
         setInterval(() => { axios
-            .get(`http://127.0.0.1:5000/app/getstatus/${this.component.id}/`)
+            .get(`http://185.129.98.66:5000/app/getstatus/${this.component.id}/`)
             .then((response) => {
               console.log(response.data);
               if (response.data.status == null) {

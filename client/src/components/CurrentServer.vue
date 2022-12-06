@@ -72,7 +72,7 @@ export default {
     //   get server
     serverDetail() {
       axios
-        .get(`http://185.129.98.66:5000/app/current_server/${this.id}/`)
+        .get(`http://192.168.88.11:5000/app/current_server/${this.id}/`)
         .then((response) => {
           this.server = response.data;
           console.log(response.data);

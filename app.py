@@ -806,4 +806,4 @@ def handle_testing(id):
     return jsonify(conclusion)
 
 if __name__ == '__main__':
-    app.run(host='185.129.98.66', port=5000)
+    app.run(host='192.168.88.11', port=5000)

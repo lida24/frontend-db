@@ -53,7 +53,7 @@ export default {
   methods: {
     addComponent() {
       axios
-        .post(`http://185.129.98.66:5000/app/add_disk_basket3/${this.id}/`, this.formData)
+        .post(`http://192.168.88.11:5000/app/add_disk_basket3/${this.id}/`, this.formData)
         .then((response) => {
           console.log(response);
           if (response.data.error == '500') {

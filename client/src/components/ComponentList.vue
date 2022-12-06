@@ -32,7 +32,7 @@
     
       created() {
         axios
-          .get("http://185.129.98.66:5000/app/component_list")
+          .get("http://192.168.88.11:5000/app/component_list")
           .then((response) => {
             this.components = response.data;
             console.log("Components: ",this.components);

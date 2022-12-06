@@ -41,7 +41,7 @@ import router from "../router";
     },
     created() {
         axios
-            .get("http://185.129.98.66:5000/app/server_list")
+            .get("http://192.168.88.11:5000/app/server_list")
             .then((response) => {
             console.log(response);
             this.servers = response.data;

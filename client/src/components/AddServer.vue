@@ -337,7 +337,7 @@
       methods: {
         add_indicator_board() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_indicator_board/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_indicator_board/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.indicator_board = response.data;
@@ -346,7 +346,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.indicator_board = response.data.indicator_board;
@@ -357,7 +357,7 @@
         },
         add_fans_40() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_fan40/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_fan40/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fans_40 = response.data;
@@ -366,7 +366,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fans_40 = response.data.fans_40;
@@ -377,7 +377,7 @@
         },
         add_cables() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_cables/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_cables/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables = response.data;
@@ -386,7 +386,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables = response.data.cables;
@@ -397,7 +397,7 @@
         },
         add_fans_140() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_fan140/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_fan140/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fans_140 = response.data;
@@ -406,7 +406,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fans_140 = response.data.fans_140;
@@ -417,7 +417,7 @@
         },
         add_fan_control_board() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_fan_control_board/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_fan_control_board/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fan_control_board = response.data;
@@ -426,7 +426,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.fan_control_board = response.data.fan_control_board;
@@ -437,7 +437,7 @@
         },
         add_power_management_module() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_power_management_module/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_power_management_module/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.power_management_module = response.data;
@@ -446,7 +446,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.power_management_module = response.data.power_management_module;
@@ -457,7 +457,7 @@
         },
         add_cables_pmm() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_cables_pmm/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_cables_pmm/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables_pmm = response.data;
@@ -466,7 +466,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables_pmm = response.data.cables_pmm;
@@ -477,7 +477,7 @@
         },
         add_cables_fcb() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_cables_fcb/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_cables_fcb/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables_fcb = response.data;
@@ -486,7 +486,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables_fcb = response.data.cables_fcb;
@@ -497,7 +497,7 @@
         },
         add_memory_and_ssd() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_memory_and_ssd/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_memory_and_ssd/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.memory_and_ssd = response.data;
@@ -506,7 +506,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.memory_and_ssd = response.data.memory_and_ssd;
@@ -517,7 +517,7 @@
         },
         add_network_card() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_network_card/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_network_card/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.network_card = response.data;
@@ -526,7 +526,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.network_card = response.data.network_card;
@@ -537,7 +537,7 @@
         },
         add_raiser_2U_board() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_raiser_2U_board/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_raiser_2U_board/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.raiser_2U_board = response.data;
@@ -546,7 +546,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.raiser_2U_board = response.data.raiser_2U_board;
@@ -557,7 +557,7 @@
         },
         add_raid_card() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_raid_card/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_raid_card/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.raid_card = response.data;
@@ -566,7 +566,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.raid_card = response.data.raid_card;
@@ -577,7 +577,7 @@
         },
         add_cables_mb() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_cables_mb/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_cables_mb/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables_mb = response.data;
@@ -586,7 +586,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.cables_mb = response.data.cables_mb;
@@ -597,7 +597,7 @@
         },
         add_power_supply_2k6() {
         axios
-          .post(`http://185.129.98.66:5000/app/add_power_supply_2k6/${this.id}/`)
+          .post(`http://192.168.88.11:5000/app/add_power_supply_2k6/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.power_supply_2k6 = response.data;
@@ -606,7 +606,7 @@
             console.log(error);
           });
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             console.log(response.data);
             this.power_supply_2k6 = response.data.power_supply_2k6;
@@ -618,7 +618,7 @@
       }, 
       created() {
         axios
-          .get(`http://185.129.98.66:5000/app/get_chassis/${this.id}/`)
+          .get(`http://192.168.88.11:5000/app/get_chassis/${this.id}/`)
           .then((response) => {
             this.indicator_board = response.data.indicator_board;
             this.fans_40 = response.data.fans_40;
